@@ -5,16 +5,18 @@ import (
     "net/http"
 
     "github.com/gin-gonic/gin"
+
+    "github.com/benoitgelineau/go-fetch-quotes/pkg/services"
 )
 
 func RegisterHandlers(router *gin.Engine) {
     router.GET("/search", func(c *gin.Context) {
         q := c.Query("q")
         log.Printf("/search query: %s", q)
+
+        results := services.ScrapeSearchResult(q);
         // TODO Check empty query, return 404? 204 No content?
-        c.JSON(http.StatusOK, gin.H{
-            "data": "[]",
-        })
+        c.JSON(http.StatusOK, results)
     })
 
     router.GET("/quotes/:code", func(c *gin.Context) {
