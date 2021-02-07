@@ -3,6 +3,7 @@ package api
 import (
     "log"
     "net/http"
+    "time"
 
     "github.com/gin-gonic/gin"
 
@@ -12,26 +13,30 @@ import (
 func RegisterHandlers(router *gin.Engine) {
     router.GET("/search", func(c *gin.Context) {
         q := c.Query("q")
-        log.Printf("/search query: %s", q)
 
         results := services.ScrapeSearchResult(q);
         // TODO Check empty query, return 404? 204 No content?
         c.JSON(http.StatusOK, results)
     })
 
-    router.GET("/quotes/:code", func(c *gin.Context) {
-        code := c.Param("code")
-        // US date format
+    router.GET("/quotes/:symbol", func(c *gin.Context) {
+        symbol := c.Param("symbol")
         // https://github.com/gin-gonic/gin#custom-validators
-        // TODO choose default based on interval & date of request
-        from := c.DefaultQuery("from", "2020-06-02")
-        // TODO Default to date of request
-        to := c.DefaultQuery("to", "2020-06-02")
-        // TODO Default to max interval possible (based on dates), or 1M default
-        interval := c.DefaultQuery("interval", "1M")
-        log.Printf("/quotes code: %s, from: %s, to: %s, interval: %s", code, from, to, interval)
-        c.JSON(http.StatusOK, gin.H{
-            "data": "[]",
-        })
+        now := time.Now()
+        lastMonth := now.AddDate(0,-1,0)
+        // Default start date = a month from now
+        startDate := c.DefaultQuery("startDate", lastMonth.Format(services.LayoutISO))
+        startDateAsTime, err := time.Parse(services.LayoutISO, startDate)
+        if err != nil {
+            log.Fatal(err)
+        }
+        // Default duration = 3 months
+        duration := c.DefaultQuery("duration", "3M")
+        // Default period = daily
+        period := c.DefaultQuery("period", "1")
+
+        quotes := services.GetQuotes(symbol, startDateAsTime, duration, period)
+
+        c.JSON(http.StatusOK, quotes)
     })
 }
