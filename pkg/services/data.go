@@ -18,7 +18,7 @@ type Asset struct {
 
 type Quote struct {
     Date    string  `json:"date"`
-    Price   string     `json:"price"`
+    Price   string  `json:"price"`
 }
 
 const (
@@ -33,9 +33,9 @@ func ScrapeSearchResult(query string) []Asset {
     doc := getHTMLDocument("https://www.boursorama.com/recherche/ajax?query=" + query)
 
     // Find the search results
-	doc.Find(".search__list").First().Find(".search__list-link").Each(func(i int, s *goquery.Selection) {
+    doc.Find(".search__list").First().Find(".search__list-link").Each(func(i int, s *goquery.Selection) {
         asset := Asset{}
-		asset.Name = s.Find(".search__item-title").Text()
+	asset.Name = s.Find(".search__item-title").Text()
         link, ok := s.Attr("href")
         if !ok {
             log.Fatal("Unable to find link href")

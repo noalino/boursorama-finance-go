@@ -15,7 +15,6 @@ func RegisterHandlers(router *gin.Engine) {
         q := c.Query("q")
 
         results := services.ScrapeSearchResult(q);
-        // TODO Check empty query, return 404? 204 No content?
         c.JSON(http.StatusOK, results)
     })
 
