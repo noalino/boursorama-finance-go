@@ -4,6 +4,7 @@ import (
     "log"
     "net/http"
     "time"
+    "strconv"
     "strings"
 
     "github.com/PuerkitoBio/goquery"
@@ -24,15 +25,14 @@ type Quote struct {
 const (
     LayoutISO = "02/01/2006"
 )
-var assets []Asset
 var DefaultDurations = [...]string {"1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"}
 var DefaultPeriods = [...]string {"1","7","30","365"}
-var quotes []Quote
 
 func ScrapeSearchResult(query string) []Asset {
     doc := getHTMLDocument("https://www.boursorama.com/recherche/ajax?query=" + query)
 
     // Find the search results
+    var assets []Asset
     doc.Find(".search__list").First().Find(".search__list-link").Each(func(i int, s *goquery.Selection) {
         asset := Asset{}
 	asset.Name = s.Find(".search__item-title").Text()
@@ -51,21 +51,42 @@ func ScrapeSearchResult(query string) []Asset {
 }
 
 func GetQuotes(symbol string, startDate time.Time, duration string, period string) []Quote {
-    url := "https://www.boursorama.com/_formulaire-periode/?symbol=" + symbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+    var quotes []Quote
+
+    page := 1
+    url := getQuotesUrl(symbol, startDate, duration, period, page)
     doc := getHTMLDocument(url)
 
+    nbOfPages := doc.Find("span.c-pagination__content").Length()
+
     // Find the asset quotes
-    doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
-        // Escape first row (table header)
-        if i == 0 {
-            return
+    appendQuotes := func() {
+        doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
+            // Escape first row (table header)
+            if i == 0 {
+                return
+            }
+            firstCell := s.Find(".c-table__cell").First()
+            quote := Quote{}
+            quote.Date = firstCell.Text()
+            quote.Price = firstCell.Next().Text()
+            quotes = append(quotes, quote)
+        })
+    }
+
+    // Fetch all pages if any
+    var getQuotes func()
+    getQuotes = func() {
+        doc = getHTMLDocument(url)
+        appendQuotes()
+        page = page + 1
+        if nbOfPages != 0 && page <= nbOfPages {
+            url = getQuotesUrl(symbol, startDate, duration, period, page)
+            getQuotes()
         }
-        firstCell := s.Find(".c-table__cell").First()
-        quote := Quote{}
-        quote.Date = firstCell.Text()
-        quote.Price = firstCell.Next().Text()
-        quotes = append(quotes, quote)
-    })
+    } 
+
+    getQuotes()
 
     return quotes
 }
@@ -87,4 +108,12 @@ func getHTMLDocument(url string) *goquery.Document {
 		log.Fatal("Cannot load HTML document", err)
 	}
     return doc
+}
+
+func getQuotesUrl(symbol string, startDate time.Time, duration string, period string, page int) string {
+    if page == 1 {
+        return "https://www.boursorama.com/_formulaire-periode/?symbol=" + symbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+    } else {
+        return "https://www.boursorama.com/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + symbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+    }
 }
