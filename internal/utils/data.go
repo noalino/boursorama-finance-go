@@ -35,7 +35,7 @@ func ScrapeSearchResult(query string) []Asset {
     var assets []Asset
     doc.Find(".search__list").First().Find(".search__list-link").Each(func(i int, s *goquery.Selection) {
         asset := Asset{}
-	asset.Name = s.Find(".search__item-title").Text()
+        asset.Name = s.Find(".search__item-title").Text()
         link, ok := s.Attr("href")
         if !ok {
             log.Fatal("Unable to find link href")
@@ -45,7 +45,7 @@ func ScrapeSearchResult(query string) []Asset {
         asset.Category = strings.Trim(s.Find(".search__item-content").Text(), " \n")
         asset.LastPrice = s.Find(".search__item-instrument .last").Text()
         assets = append(assets, asset)
-	})
+    })
 
     return assets 
 }

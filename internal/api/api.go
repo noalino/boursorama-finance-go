@@ -7,14 +7,14 @@ import (
 
     "github.com/gin-gonic/gin"
 
-    "github.com/benoitgelineau/go-fetch-quotes/pkg/services"
+    "github.com/benoitgelineau/go-fetch-quotes/internal/utils"
 )
 
 func RegisterHandlers(router *gin.Engine) {
     router.GET("/search", func(c *gin.Context) {
         q := c.Query("q")
 
-        results := services.ScrapeSearchResult(q);
+        results := utils.ScrapeSearchResult(q);
         c.JSON(http.StatusOK, results)
     })
 
@@ -34,7 +34,7 @@ func RegisterHandlers(router *gin.Engine) {
         // Default period = daily
         period := c.DefaultQuery("period", "1")
 
-        quotes := services.GetQuotes(symbol, startDateAsTime, duration, period)
+        quotes := utils.GetQuotes(symbol, startDateAsTime, duration, period)
 
         c.JSON(http.StatusOK, quotes)
     })

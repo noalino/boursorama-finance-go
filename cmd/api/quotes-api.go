@@ -5,7 +5,7 @@ import (
 
     "github.com/gin-gonic/gin"
 
-    "github.com/benoitgelineau/go-fetch-quotes/pkg/api"
+    "github.com/benoitgelineau/go-fetch-quotes/internal/api"
 )
 
 func main() {
