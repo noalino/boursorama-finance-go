@@ -24,8 +24,8 @@ func RegisterHandlers(router *gin.Engine) {
         now := time.Now()
         lastMonth := now.AddDate(0,-1,0)
         // Default start date = a month from now
-        startDate := c.DefaultQuery("startDate", lastMonth.Format(services.LayoutISO))
-        startDateAsTime, err := time.Parse(services.LayoutISO, startDate)
+        startDate := c.DefaultQuery("startDate", lastMonth.Format(utils.LayoutISO))
+        startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
         if err != nil {
             log.Fatal(err)
         }
