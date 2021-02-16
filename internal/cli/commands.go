@@ -15,7 +15,14 @@ import (
 
 func RegisterSearchAction(cli *clir.Cli) {
     search := cli.NewSubCommand("search", "Search a financial asset")
-    search.LongDescription("Search a financial asset by name or ISIN and return the following information:\n\nSymbol | Name | Asset type | Last Price")
+    search.LongDescription(
+`
+Search a financial asset by name or ISIN and return the following information:
+-----------------------------------------
+| Symbol | Name | Category | Last Price |
+-----------------------------------------
+
+Usage: quotes search [NAME|ISIN]`)
 
     search.Action(func() error {
         if len(os.Args) < 3 {
@@ -54,21 +61,30 @@ func RegisterSearchAction(cli *clir.Cli) {
 
 func RegisterGetAction(cli *clir.Cli) {
     get := cli.NewSubCommand("get", "Return quotes")
-    // TODO
-    get.LongDescription("Usage: quotes get [OPTIONS] [SYMBOL]")
+    get.LongDescription(
+`
+Usage: quotes get [OPTIONS] [SYMBOL]`)
 
     now := time.Now()
     lastMonth := now.AddDate(0,-1,0)
     // Default start date = a month from now
     startDate := lastMonth.Format(utils.LayoutISO)
-    //var startDate string
-    get.StringFlag("from", "Start date", &startDate)
+    get.StringFlag("from",
+`Specify the start date, it must be in the following format:
+DD/MM/YYYY`,
+    &startDate)
 
     duration := "3M"
-    get.StringFlag("duration", "Duration", &duration)
+    get.StringFlag("duration",
+`Specify the duration, it should be one of the following values:
+["1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"]`,
+    &duration)
 
     period := "1"
-    get.StringFlag("period", "Period", &period)
+    get.StringFlag("period",
+`Specify the period, it should be one the following values:
+["1","7","30","365"]`,
+    &period)
 
     get.Action(func() error {
         if len(os.Args) < 3 {
