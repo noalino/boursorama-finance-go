@@ -5,6 +5,7 @@ import (
     "fmt"
     "os"
     "strings"
+    "time"
 
     "github.com/leaanthony/clir"
     "github.com/olekukonko/tablewriter"
@@ -53,8 +54,43 @@ func RegisterSearchAction(cli *clir.Cli) {
 
 func RegisterGetAction(cli *clir.Cli) {
     get := cli.NewSubCommand("get", "Return quotes")
-}
+    // TODO
+    get.LongDescription("Usage: quotes get [OPTIONS] [SYMBOL]")
 
-func Get() error {
-    return nil
+    now := time.Now()
+    lastMonth := now.AddDate(0,-1,0)
+    // Default start date = a month from now
+    startDate := lastMonth.Format(utils.LayoutISO)
+    //var startDate string
+    get.StringFlag("from", "Start date", &startDate)
+
+    duration := "3M"
+    get.StringFlag("duration", "Duration", &duration)
+
+    period := "1"
+    get.StringFlag("period", "Period", &period)
+
+    get.Action(func() error {
+        if len(os.Args) < 3 {
+            return errors.New("Missing a value, please refer to the documentation by using `quotes get -help`")
+        }
+        // TODO Check flags
+        symbol := strings.ToUpper(strings.TrimSpace(get.OtherArgs()[0]))
+
+        startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
+        if err != nil {
+            return fmt.Errorf("Could not parse date: %v\n", err)
+        }
+
+        quotes := utils.GetQuotes(symbol, startDateAsTime, duration, period)
+        if len(quotes) == 0 {
+            fmt.Println("No quotes found.")
+        } else {
+            fmt.Printf("date,%s\n", symbol)
+            for _, quote := range(quotes) {
+                fmt.Printf("%s,%s\n", strings.TrimSpace(quote.Date), strings.TrimSpace(quote.Price))
+            }
+        }
+        return nil
+    })
 }
