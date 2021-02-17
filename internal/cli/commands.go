@@ -3,9 +3,7 @@ package cli
 import (
     "errors"
     "fmt"
-    "net/url"
     "os"
-    "strings"
     "time"
 
     "github.com/leaanthony/clir"
@@ -26,15 +24,18 @@ Search a financial asset by name or ISIN and return the following information:
 Usage: quotes search [NAME|ISIN]`)
 
     search.Action(func() error {
-        inputValue := search.OtherArgs()[0]
-        if inputValue == "" {
+        otherArgs := search.OtherArgs()
+        if len(otherArgs) == 0 {
             return errors.New("Too few arguments, please refer to the documentation by using `quotes search -help`")
         }
 
-        query := url.QueryEscape(strings.TrimSpace(inputValue))
+        query := otherArgs[0]
 
-        fmt.Printf("Searching for %s...\n", query)
-        assets := utils.ScrapeSearchResult(query)
+        fmt.Printf("Searching for '%s'...\n", query)
+        assets, err := utils.ScrapeSearchResult(query)
+        if err != nil {
+            return err
+        }
 
         if len(assets) == 0 {
             fmt.Println("No result found.")
@@ -88,24 +89,29 @@ DD/MM/YYYY`,
     &period)
 
     get.Action(func() error {
-        if len(os.Args) < 3 {
-            return errors.New("Missing a value, please refer to the documentation by using `quotes get -help`")
+        otherArgs := get.OtherArgs()
+        if len(otherArgs) == 0 {
+            return errors.New("Too few arguments, please refer to the documentation by using `quotes get -help`")
         }
-        // TODO Check flags
-        symbol := strings.ToUpper(strings.TrimSpace(get.OtherArgs()[0]))
+
+        symbol := otherArgs[0]
 
         startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
         if err != nil {
-            return fmt.Errorf("Could not parse date: %v\n", err)
+            return fmt.Errorf("Wrong date format: %v\n", err)
         }
 
-        quotes := utils.GetQuotes(symbol, startDateAsTime, duration, period)
+        quotes, err := utils.GetQuotes(symbol, startDateAsTime, duration, period)
+        if err != nil {
+            return err
+        }
+
         if len(quotes) == 0 {
             fmt.Println("No quotes found.")
         } else {
             fmt.Printf("date,%s\n", symbol)
             for _, quote := range(quotes) {
-                fmt.Printf("%s,%s\n", strings.TrimSpace(quote.Date), strings.TrimSpace(quote.Price))
+                fmt.Printf("%s,%s\n", quote.Date, quote.Price)
             }
         }
         return nil

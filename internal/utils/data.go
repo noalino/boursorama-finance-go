@@ -1,7 +1,9 @@
 package utils 
 
 import (
+    "fmt"
     "log"
+    "net/url"
     "net/http"
     "time"
     "strconv"
@@ -25,11 +27,15 @@ type Quote struct {
 const (
     LayoutISO = "02/01/2006"
 )
-var DefaultDurations = [...]string {"1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"}
-var DefaultPeriods = [...]string {"1","7","30","365"}
+var DefaultDurations = []string{"1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"}
+var DefaultPeriods = []string{"1","7","30","365"}
 
-func ScrapeSearchResult(query string) []Asset {
-    doc := getHTMLDocument("https://www.boursorama.com/recherche/ajax?query=" + query)
+func ScrapeSearchResult(query string) ([]Asset, error) {
+    sanitizedQuery := url.QueryEscape(strings.TrimSpace(query))
+    doc, err := getHTMLDocument("https://www.boursorama.com/recherche/ajax?query=" + sanitizedQuery)
+    if err != nil {
+        return nil, err
+    }
 
     // Find the search results
     var assets []Asset
@@ -47,17 +53,27 @@ func ScrapeSearchResult(query string) []Asset {
         assets = append(assets, asset)
     })
 
-    return assets 
+    return assets, nil
 }
 
-func GetQuotes(symbol string, startDate time.Time, duration string, period string) []Quote {
-    var quotes []Quote
+func GetQuotes(symbol string, startDate time.Time, duration string, period string) ([]Quote, error) {
+    if ok := contains(DefaultDurations, duration); !ok {
+        return nil, fmt.Errorf("Duration must be one of %v", DefaultDurations)
+    }
+    if ok := contains(DefaultPeriods, period); !ok {
+        return nil, fmt.Errorf("Period must be one of %v", DefaultPeriods)
+    }
 
+    var quotes []Quote
     page := 1
     url := getQuotesUrl(symbol, startDate, duration, period, page)
-    doc := getHTMLDocument(url)
+    doc, err := getHTMLDocument(url)
+    if err != nil {
+        return nil, err
+    }
 
     nbOfPages := doc.Find("span.c-pagination__content").Length()
+    log.Printf("Number of pages: %d", nbOfPages)
 
     // Find the asset quotes
     appendQuotes := func() {
@@ -68,52 +84,74 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
             }
             firstCell := s.Find(".c-table__cell").First()
             quote := Quote{}
-            quote.Date = firstCell.Text()
-            quote.Price = firstCell.Next().Text()
+            quote.Date = strings.TrimSpace(firstCell.Text())
+            quote.Price = strings.TrimSpace(firstCell.Next().Text())
             quotes = append(quotes, quote)
         })
     }
 
     // Fetch all pages if any
-    var getQuotes func()
-    getQuotes = func() {
-        doc = getHTMLDocument(url)
+    var getQuotes func() (bool, error)
+    getQuotes = func() (bool, error) {
+        log.Printf("URL: %s", url)
+        log.Printf("page: %d", page)
+        doc, err = getHTMLDocument(url)
+        if err != nil {
+            return false, err
+        }
         appendQuotes()
         page = page + 1
         if nbOfPages != 0 && page <= nbOfPages {
             url = getQuotesUrl(symbol, startDate, duration, period, page)
-            getQuotes()
+            ok, err := getQuotes()
+            if !ok {
+                return false, err
+            }
         }
+        return true, nil
     } 
 
-    getQuotes()
+    ok, err := getQuotes()
+    if !ok {
+        return nil, err
+    }
 
-    return quotes
+    return quotes, nil
 }
 
-func getHTMLDocument(url string) *goquery.Document {
+func getHTMLDocument(url string) (*goquery.Document, error) {
     // Request the HTML page
 	res, err := http.Get(url)
-	if err != nil {
-        log.Fatal("Cannot fetch URL:", err)
+    if err != nil {
+        return nil, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		return nil, fmt.Errorf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		log.Fatal("Cannot load HTML document", err)
+        return nil, err
 	}
-    return doc
+    return doc, nil
 }
 
 func getQuotesUrl(symbol string, startDate time.Time, duration string, period string, page int) string {
+    sanitizedSymbol := strings.ToUpper(strings.TrimSpace(symbol))
     if page == 1 {
-        return "https://www.boursorama.com/_formulaire-periode/?symbol=" + symbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+        return "https://www.boursorama.com/_formulaire-periode/?symbol=" + sanitizedSymbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
     } else {
-        return "https://www.boursorama.com/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + symbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+        return "https://www.boursorama.com/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + sanitizedSymbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
     }
+}
+
+func contains(values []string, query string) bool {
+    for _, value := range values {
+        if value == query {
+            return true
+        }
+    }
+    return false
 }
