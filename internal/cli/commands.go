@@ -3,6 +3,7 @@ package cli
 import (
     "errors"
     "fmt"
+    "net/url"
     "os"
     "strings"
     "time"
@@ -25,12 +26,12 @@ Search a financial asset by name or ISIN and return the following information:
 Usage: quotes search [NAME|ISIN]`)
 
     search.Action(func() error {
-        if len(os.Args) < 3 {
-            return errors.New("Missing a value, please refer to the documentation by using `quotes search -help`")
+        inputValue := search.OtherArgs[0]
+        if inputValue == "" {
+            return errors.New("Too few arguments, please refer to the documentation by using `quotes search -help`")
         }
 
-        // TODO handle string with space inside, encode URL
-        query := search.OtherArgs()[0]
+        query := url.QueryEscape(strings.TrimSpace(inputValue))
 
         fmt.Printf("Searching for %s...\n", query)
         assets := utils.ScrapeSearchResult(query)
