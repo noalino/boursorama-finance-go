@@ -1,7 +1,6 @@
 package api
 
 import (
-    "log"
     "net/http"
     "time"
 
@@ -13,8 +12,16 @@ import (
 func RegisterHandlers(router *gin.Engine) {
     router.GET("/search", func(c *gin.Context) {
         q := c.Query("q")
+        if q == "" {
+            handleBadRequest(c, "Missing query value")
+            return
+        }
 
-        results := utils.ScrapeSearchResult(q);
+        results, err := utils.ScrapeSearchResult(q);
+        if err != nil {
+            handleBadRequest(c, err)
+            return
+        }
         c.JSON(http.StatusOK, results)
     })
 
@@ -27,15 +34,27 @@ func RegisterHandlers(router *gin.Engine) {
         startDate := c.DefaultQuery("startDate", lastMonth.Format(utils.LayoutISO))
         startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
         if err != nil {
-            log.Fatal(err)
+            handleBadRequest(c, err)
+            return
         }
         // Default duration = 3 months
         duration := c.DefaultQuery("duration", "3M")
         // Default period = daily
         period := c.DefaultQuery("period", "1")
 
-        quotes := utils.GetQuotes(symbol, startDateAsTime, duration, period)
+        quotes, err := utils.GetQuotes(symbol, startDateAsTime, duration, period)
+        if err != nil {
+            handleBadRequest(c, err)
+            return
+        }
 
         c.JSON(http.StatusOK, quotes)
+    })
+}
+
+func handleBadRequest(c *gin.Context, message interface{}) {
+    c.JSON(http.StatusBadRequest, gin.H{
+        "status": http.StatusBadRequest,
+        "message": message,
     })
 }
