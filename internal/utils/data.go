@@ -8,6 +8,7 @@ import (
     "time"
     "strconv"
     "strings"
+    "sync"
 
     "github.com/PuerkitoBio/goquery"
 )
@@ -44,7 +45,8 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
         asset.Name = s.Find(".search__item-title").Text()
         link, ok := s.Attr("href")
         if !ok {
-            log.Fatal("Unable to find link href")
+            log.Fatalf("Unable to find the quote symbol for %s\n", asset.Name)
+            return
         }
         splittedLink := strings.Split(link, "/")
         asset.Symbol = splittedLink[len(splittedLink)-2]
@@ -64,19 +66,17 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
         return nil, fmt.Errorf("Period must be one of %v", DefaultPeriods)
     }
 
-    var quotes []Quote
-    page := 1
-    url := getQuotesUrl(symbol, startDate, duration, period, page)
+    // First page request to get the number of pages to scrap
+    url := getQuotesUrl(symbol, startDate, duration, period, 1)
     doc, err := getHTMLDocument(url)
     if err != nil {
         return nil, err
     }
 
     nbOfPages := doc.Find("span.c-pagination__content").Length()
-    log.Printf("Number of pages: %d", nbOfPages)
 
-    // Find the asset quotes
-    appendQuotes := func() {
+    scrapQuotes := func() ([]Quote) {
+        quotes := []Quote{}
         doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
             // Escape first row (table header)
             if i == 0 {
@@ -88,35 +88,69 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
             quote.Price = strings.TrimSpace(firstCell.Next().Text())
             quotes = append(quotes, quote)
         })
+        return quotes
     }
 
-    // Fetch all pages if any
-    var getQuotes func() (bool, error)
-    getQuotes = func() (bool, error) {
-        log.Printf("URL: %s", url)
-        log.Printf("page: %d", page)
-        doc, err = getHTMLDocument(url)
-        if err != nil {
-            return false, err
-        }
-        appendQuotes()
-        page = page + 1
-        if nbOfPages != 0 && page <= nbOfPages {
-            url = getQuotesUrl(symbol, startDate, duration, period, page)
-            ok, err := getQuotes()
-            if !ok {
-                return false, err
+    var allQuotes []Quote
+
+    // Fetch quotes concurrently if there is more than one page
+    if (nbOfPages < 2) {
+        allQuotes = scrapQuotes()
+    } else {
+        // Make channels to pass fatal errors in WaitGroup
+        fatalErrors := make(chan error)
+        wgDone := make(chan bool)
+
+        var wg sync.WaitGroup
+        // Scrap by page
+        getPageQuotes := func(index int) ([]Quote, error) {
+            url = getQuotesUrl(symbol, startDate, duration, period, index + 1)
+            doc, err = getHTMLDocument(url)
+            if err != nil {
+                return nil, err
             }
+            return scrapQuotes(), nil
         }
-        return true, nil
-    } 
+        // Init slice to return quotes from all pages
+        quotesByPage := make([][]Quote, nbOfPages)
+        // Use first page request to scrap quotes
+        quotesByPage[0] = scrapQuotes()
+        // Fetch the remaining pages
+        for i := 1; i < nbOfPages; i++ {
+            wg.Add(1)
 
-    ok, err := getQuotes()
-    if !ok {
-        return nil, err
+            go func(index int) {
+                defer wg.Done()
+
+                quotesByPage[index], err = getPageQuotes(index)
+                if err != nil {
+                    fatalErrors <- err
+                }
+            }(i)
+        }
+
+        // Final goroutine to wait until WaitGroup is done
+        go func() {
+            wg.Wait()
+            close(wgDone)
+        }()
+
+        // Wait until either WaitGroup is done or an error is received through the channel
+        select {
+        case <-wgDone:
+            // Carry on
+            break
+        case err := <-fatalErrors:
+            close(fatalErrors)
+            return nil, err
+        }
+
+        for _, currentPageQuotes := range(quotesByPage) {
+            allQuotes = append(allQuotes, currentPageQuotes...)
+        }
     }
 
-    return quotes, nil
+    return allQuotes, nil
 }
 
 func getHTMLDocument(url string) (*goquery.Document, error) {

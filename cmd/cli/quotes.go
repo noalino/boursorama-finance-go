@@ -15,7 +15,7 @@ func main() {
     commands.RegisterGetAction(cli)
 
     if err := cli.Run(); err != nil {
-        fmt.Printf("Error while trying to run the CLI:\n%v\n", err)
+        fmt.Printf("Error: %v\n", err)
     }
 }
 
