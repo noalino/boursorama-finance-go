@@ -21,7 +21,7 @@ Search a financial asset by name or ISIN and return the following information:
 | Symbol | Name | Category | Last Price |
 -----------------------------------------
 
-Usage: quotes search [NAME|ISIN]`)
+Usage: quotes search NAME | ISIN`)
 
     search.Action(func() error {
         otherArgs := search.OtherArgs()
@@ -65,7 +65,7 @@ func RegisterGetAction(cli *clir.Cli) {
     get := cli.NewSubCommand("get", "Return quotes")
     get.LongDescription(
 `
-Usage: quotes get [OPTIONS] [SYMBOL]`)
+Usage: quotes get [OPTIONS] SYMBOL`)
 
     now := time.Now()
     lastMonth := now.AddDate(0,-1,0)
