@@ -71,10 +71,11 @@ Usage: quotes get [OPTIONS] SYMBOL`)
     lastMonth := now.AddDate(0,-1,0)
     // Default start date = a month from now
     startDate := lastMonth.Format(utils.LayoutISO)
+    defaultStartDate := "a month from now"
     get.StringFlag("from",
 `Specify the start date, it must be in the following format:
 DD/MM/YYYY`,
-    &startDate)
+    &defaultStartDate)
 
     duration := "3M"
     get.StringFlag("duration",

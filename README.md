@@ -66,7 +66,7 @@ Flags:
     	["1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"] (default "3M")
   -from string
     	Specify the start date, it must be in the following format:
-    	DD/MM/YYYY (default "20/01/2021")
+      DD/MM/YYYY (default "a month from now")
   -help
     	Get help on the 'quotes get' command.
   -period string
