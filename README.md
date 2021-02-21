@@ -85,11 +85,17 @@ $ docker run --rm --name go-fetch-quotes-cli go-fetch-quotes quotes search berks
 Searching for 'berkshire'...
 Results found:
 
-| SYMBOL |        NAME         | CATEGORY | LAST PRICE |
-|--------|---------------------|----------|------------|
-| 3kBERK | BERKSHIRE BANCOR    | OTCBB    | 9.450 $    |
-| BRK.B  | BERKSHIRE HATH RG-B | NYSE     | 241.690 $  |
-| BHLB   | BERKSHIRE HILLS     | NYSE     | 20.030 $   |
+| SYMBOL |        NAME         | LAST PRICE |
+|--------|---------------------|------------|
+| BRK.B  | BERKSHIRE HATH RG-B | 241.690 $  |
+|        | NYSE                |            |
+|--------|---------------------|------------|
+| BHLB   | BERKSHIRE HILLS     | 20.030 $   |
+|        | NYSE                |            |
+|--------|---------------------|------------|
+| 3kBERK | BERKSHIRE BANCOR    | 9.450 $    |
+|        | OTCBB               |            |
+|--------|---------------------|------------|
 
 
 $ docker run --rm --name go-fetch-quotes go-fetch-quotes quotes get 3kberk      

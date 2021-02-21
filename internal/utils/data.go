@@ -16,7 +16,6 @@ import (
 type Asset struct {
     Symbol      string  `json:"symbol"`
     Name        string  `json:"name"`
-    Category    string  `json:"category"`
     LastPrice   string  `json:"last_price"`
 }
 
@@ -42,16 +41,28 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
     var assets []Asset
     doc.Find(".search__list").First().Find(".search__list-link").Each(func(i int, s *goquery.Selection) {
         asset := Asset{}
-        asset.Name = s.Find(".search__item-title").Text()
+
+        otherInfo := strings.Trim(s.Find(".search__item-content").Text(), " \n")
+        name := s.Find(".search__item-title").Text()
+        asset.Name = name + "\n" + otherInfo
+
         link, ok := s.Attr("href")
         if !ok {
             log.Fatalf("Unable to find the quote symbol for %s\n", asset.Name)
             return
         }
+        var symbolIndex int
         splittedLink := strings.Split(link, "/")
-        asset.Symbol = splittedLink[len(splittedLink)-2]
-        asset.Category = strings.Trim(s.Find(".search__item-content").Text(), " \n")
+        runeLink := []rune(link)
+        if (runeLink[len(runeLink) - 1] == []rune("/")[0]) {
+          symbolIndex = len(splittedLink) - 2
+        } else {
+          symbolIndex = len(splittedLink) - 1
+        }
+        asset.Symbol = splittedLink[symbolIndex]
+
         asset.LastPrice = s.Find(".search__item-instrument .last").Text()
+
         assets = append(assets, asset)
     })
 
