@@ -37,7 +37,7 @@ docker run --rm --name go-fetch-quotes-cli go-fetch-quotes quotes
 
 ### API
 
-> TODO: Swagger documentation
+[OpenAPI documentation](internal/api/openapi.yml)
 
 ### CLI
 
