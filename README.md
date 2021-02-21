@@ -22,7 +22,7 @@ docker build -t go-fetch-quotes .
 #### To run the API:
 
 ```shell
-docker run --rm --name go-fetch-quotes-api go-fetch-quotes quotes-api
+docker run --rm --name go-fetch-quotes-api -p 8080:8080 go-fetch-quotes quotes-api
 ```
 
 It starts the API on _localhost:8080_
