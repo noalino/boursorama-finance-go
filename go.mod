@@ -1,4 +1,4 @@
-module github.com/benoitgelineau/go-fetch-quotes
+module github.com/benoitgelineau/boursorama-finance-go
 
 go 1.13
 

@@ -5,7 +5,7 @@ import (
 
     "github.com/leaanthony/clir"
 
-    commands "github.com/benoitgelineau/go-fetch-quotes/internal/cli"
+    commands "github.com/benoitgelineau/boursorama-finance-go/internal/cli"
 )
 
 func main() {

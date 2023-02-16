@@ -1,4 +1,4 @@
-# Quotes
+# Boursorama-finance-go
 
 A basic tool aiming at scraping financial assets quotes from the [boursorama](https://www.boursorama.com/bourse/) website.
 
@@ -9,20 +9,20 @@ Both an API and a CLI are available to use.
 Clone the repository:
 
 ```shell
-git clone https://github.com/benoitgelineau/go-fetch-quotes
-cd go-fetch-quotes
+git clone https://github.com/benoitgelineau/boursorama-finance-go
+cd boursorama-finance-go
 ```
 
 Then build the Docker image:
 
 ```shell
-docker build -t go-fetch-quotes .
+docker build -t boursorama-finance-go .
 ```
 
 #### To run the API:
 
 ```shell
-docker run --rm --name go-fetch-quotes-api -p 8080:8080 go-fetch-quotes quotes-api
+docker run --rm --name boursorama-finance-go-api -p 8080:8080 boursorama-finance-go quotes-api
 ```
 
 It starts the API on _localhost:8080_
@@ -30,7 +30,7 @@ It starts the API on _localhost:8080_
 #### To run the CLI
 
 ```shell
-docker run --rm --name go-fetch-quotes-cli go-fetch-quotes quotes
+docker run --rm --name boursorama-finance-go-cli boursorama-finance-go quotes
 ```
 
 ## How it works
@@ -81,7 +81,7 @@ Choose the asset you were looking for and use the __SYMBOL__ value in the `get` 
 Example:
 
 ```shell
-$ docker run --rm --name go-fetch-quotes-cli go-fetch-quotes quotes search berkshire
+$ docker run --rm boursorama-finance-go quotes search berkshire
 Searching for 'berkshire'...
 Results found:
 
@@ -98,7 +98,7 @@ Results found:
 |--------|---------------------|------------|
 
 
-$ docker run --rm --name go-fetch-quotes go-fetch-quotes quotes get 3kberk      
+$ docker run --rm boursorama-finance-go quotes get 3kberk      
 date,3kberk
 19/02/2021,9.45
 18/02/2021,9.41
