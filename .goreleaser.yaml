@@ -1,0 +1,4 @@
+builds:
+  -
+    main: ./cmd/quotes
+    binary: quotes
