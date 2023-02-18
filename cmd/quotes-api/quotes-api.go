@@ -1,11 +1,11 @@
 package main
 
 import (
-    "net/http"
+	"net/http"
 
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 
-    "internal/api"
+	"internal/api"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 		})
 	})
 
-    api.RegisterHandlers(router);
+	api.RegisterHandlers(router)
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
