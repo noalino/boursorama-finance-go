@@ -3,9 +3,6 @@ package utils
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"net/url"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -24,16 +21,9 @@ type Quote struct {
 	Price string `json:"price"`
 }
 
-const (
-	LayoutISO = "02/01/2006"
-)
-
-var DefaultDurations = []string{"1M", "2M", "3M", "4M", "5M", "6M", "7M", "8M", "9M", "10M", "11M", "1Y", "2Y", "3Y"}
-var DefaultPeriods = []string{"1", "7", "30", "365"}
-
 func ScrapeSearchResult(query string) ([]Asset, error) {
-	sanitizedQuery := url.QueryEscape(strings.TrimSpace(query))
-	doc, err := getHTMLDocument("https://www.boursorama.com/recherche/ajax?query=" + sanitizedQuery)
+	url := getSearchUrl(query)
+	doc, err := getHTMLDocument(url)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +68,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 		return nil, fmt.Errorf("Period must be one of %v", DefaultPeriods)
 	}
 
-	// First page request to get the number of pages to scrap
+	// First page request to get the number of pages to scrape
 	url := getQuotesUrl(symbol, startDate, duration, period, 1)
 	doc, err := getHTMLDocument(url)
 	if err != nil {
@@ -163,41 +153,4 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 	}
 
 	return allQuotes, nil
-}
-
-func getHTMLDocument(url string) (*goquery.Document, error) {
-	// Request the HTML page
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	return doc, nil
-}
-
-func getQuotesUrl(symbol string, startDate time.Time, duration string, period string, page int) string {
-	sanitizedSymbol := strings.ToUpper(strings.TrimSpace(symbol))
-	if page == 1 {
-		return "https://www.boursorama.com/_formulaire-periode/?symbol=" + sanitizedSymbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
-	} else {
-		return "https://www.boursorama.com/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + sanitizedSymbol + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
-	}
-}
-
-func contains(values []string, query string) bool {
-	for _, value := range values {
-		if value == query {
-			return true
-		}
-	}
-	return false
 }

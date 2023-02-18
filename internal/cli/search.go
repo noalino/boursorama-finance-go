@@ -29,9 +29,13 @@ Usage: quotes search NAME | ISIN`)
 		}
 
 		query := otherArgs[0]
+		validQuery := utils.ValidateInput(query)
+		if validQuery == "" {
+			return errors.New("Search value must be valid and not empty.")
+		}
 
-		fmt.Printf("Searching for '%s'...\n", query)
-		assets, err := utils.ScrapeSearchResult(query)
+		fmt.Printf("Searching for '%s'...\n", validQuery)
+		assets, err := utils.ScrapeSearchResult(validQuery)
 		if err != nil {
 			return err
 		}
