@@ -5,7 +5,7 @@ import (
 
     "github.com/gin-gonic/gin"
 
-    "github.com/benoitgelineau/boursorama-finance-go/internal/api"
+    "internal/api"
 )
 
 func main() {
