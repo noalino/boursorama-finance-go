@@ -77,7 +77,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 
 	nbOfPages := doc.Find("span.c-pagination__content").Length()
 
-	scrapQuotes := func() []Quote {
+	scrapeQuotes := func() []Quote {
 		quotes := []Quote{}
 		doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
 			// Escape first row (table header)
@@ -97,7 +97,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 
 	// Fetch quotes concurrently if there is more than one page
 	if nbOfPages < 2 {
-		allQuotes = scrapQuotes()
+		allQuotes = scrapeQuotes()
 	} else {
 		// Make channels to pass fatal errors in WaitGroup
 		fatalErrors := make(chan error)
@@ -111,12 +111,12 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 			if err != nil {
 				return nil, err
 			}
-			return scrapQuotes(), nil
+			return scrapeQuotes(), nil
 		}
 		// Init slice to return quotes from all pages
 		quotesByPage := make([][]Quote, nbOfPages)
 		// Use first page request to scrap quotes
-		quotesByPage[0] = scrapQuotes()
+		quotesByPage[0] = scrapeQuotes()
 		// Fetch the remaining pages
 		for i := 1; i < nbOfPages; i++ {
 			wg.Add(1)
