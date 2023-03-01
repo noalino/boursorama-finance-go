@@ -28,32 +28,34 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 		return nil, err
 	}
 
-	// Find the search results
+	// Find the searched results
 	var assets []Asset
-	doc.Find(".search__list").First().Find(".search__list-link").Each(func(i int, s *goquery.Selection) {
+	view := doc.Find("[data-result-search]")
+
+	view.Find("tbody.c-table__body").First().Find("tr.c-table__row").Each(func (i int, s *goquery.Selection) {
 		asset := Asset{}
+		cells := s.Find("td")
+		link := cells.First().Find(".c-link")
 
-		otherInfo := strings.Trim(s.Find(".search__item-content").Text(), " \n")
-		name := s.Find(".search__item-title").Text()
-		asset.Name = name + "\n" + otherInfo
+		asset.Name = strings.TrimSpace(link.Text())
 
-		link, ok := s.Attr("href")
+		url, ok := link.Attr("href")
 		if !ok {
 			log.Fatalf("Unable to find the quote symbol for %s\n", asset.Name)
 			return
 		}
+
 		var symbolIndex int
-		splittedLink := strings.Split(link, "/")
-		runeLink := []rune(link)
-		if runeLink[len(runeLink)-1] == []rune("/")[0] {
-			symbolIndex = len(splittedLink) - 2
+		splitUrl := strings.Split(url, "/")
+		runeUrl := []rune(url)
+		if runeUrl[len(runeUrl)-1] == []rune("/")[0] {
+			symbolIndex = len(splitUrl) - 2
 		} else {
-			symbolIndex = len(splittedLink) - 1
+			symbolIndex = len(splitUrl) - 1
 		}
-		asset.Symbol = splittedLink[symbolIndex]
 
-		asset.LastPrice = s.Find(".search__item-instrument .last").Text()
-
+		asset.Symbol = splitUrl[symbolIndex]
+		asset.LastPrice = strings.TrimSpace(cells.First().Next().Next().Text())
 		assets = append(assets, asset)
 	})
 

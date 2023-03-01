@@ -28,7 +28,7 @@ func getQuotesUrl(symbol string, startDate time.Time, duration string, period st
 }
 
 func getSearchUrl(searchValue string) string {
-	return BASE_URL + "/recherche/ajax?query=" + searchValue
+	return BASE_URL + "/recherche/_instruments/" + searchValue
 }
 
 func ValidateInput(input string) string {
