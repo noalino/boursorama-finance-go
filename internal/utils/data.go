@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -11,15 +12,15 @@ import (
 )
 
 type Asset struct {
-	Symbol    string `json:"symbol"`
-	LastPrice string `json:"last_price"`
-	Market		string `json:"market"`
-	Name      string `json:"name"`
+	Symbol		string	`json:"symbol"`
+	LastPrice	string	`json:"last_price"`
+	Market		string	`json:"market"`
+	Name			string	`json:"name"`
 }
 
 type Quote struct {
-	Date  string `json:"date"`
-	Price string `json:"price"`
+	Date	string	`json:"date"`
+	Price	float64	`json:"price"`
 }
 
 func ScrapeSearchResult(query string) ([]Asset, error) {
@@ -91,7 +92,11 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 			firstCell := s.Find(".c-table__cell").First()
 			quote := Quote{}
 			quote.Date = strings.TrimSpace(firstCell.Text())
-			quote.Price = strings.TrimSpace(firstCell.Next().Text())
+			price, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimSpace(firstCell.Next().Text()), " ", ""), 64)
+			if err != nil {
+				quote.Price = 0.0
+			}
+			quote.Price = price
 			quotes = append(quotes, quote)
 		})
 		return quotes
@@ -108,7 +113,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 		wgDone := make(chan bool)
 
 		var wg sync.WaitGroup
-		// Scrap by page
+		// Scrape by page
 		getPageQuotes := func(index int) ([]Quote, error) {
 			url = getQuotesUrl(symbol, startDate, duration, period, index+1)
 			doc, err = getHTMLDocument(url)

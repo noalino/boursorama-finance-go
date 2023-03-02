@@ -64,7 +64,7 @@ DD/MM/YYYY`,
 		} else {
 			fmt.Printf("date,%s\n", symbol)
 			for _, quote := range quotes {
-				fmt.Printf("%s,%s\n", quote.Date, quote.Price)
+				fmt.Printf("%s,%.2f\n", quote.Date, quote.Price)
 			}
 		}
 		return nil

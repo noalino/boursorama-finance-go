@@ -128,7 +128,7 @@ paths:
                     date:
                       type: string
                     price:
-                      type: string
+                      type: integer
         '400':
           description: Bad request
           content:
