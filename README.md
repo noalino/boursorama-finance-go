@@ -29,6 +29,10 @@ It starts the API on _localhost:8080_
 
 #### To run the CLI
 
+[Download](https://github.com/benoitgelineau/boursorama-finance-go/releases) and run the binary file.
+
+Or you can run it inside your terminal with Docker:
+
 ```shell
 docker run --rm --name boursorama-finance-go-cli boursorama-finance-go quotes
 ```
@@ -74,9 +78,9 @@ Flags:
     	["1","7","30","365"] (default "1")
 ```
 
-You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a __SYMBOL__ value.
+You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a **SYMBOL** value.
 
-Choose the asset you were looking for and use the __SYMBOL__ value in the `get` command to fetch the quotes.
+Choose the asset you were looking for and use the **SYMBOL** value in the `get` command to fetch the quotes.
 
 Example:
 
@@ -85,39 +89,48 @@ $ docker run --rm boursorama-finance-go quotes search berkshire
 Searching for 'berkshire'...
 Results found:
 
-| SYMBOL |        NAME         | LAST PRICE |
-|--------|---------------------|------------|
-| BRK.B  | BERKSHIRE HATH RG-B | 241.690 $  |
-|        | NYSE                |            |
-|--------|---------------------|------------|
-| BHLB   | BERKSHIRE HILLS     | 20.030 $   |
-|        | NYSE                |            |
-|--------|---------------------|------------|
-| 3kBERK | BERKSHIRE BANCOR    | 9.450 $    |
-|        | OTCBB               |            |
-|--------|---------------------|------------|
+|  SYMBOL  |        NAME         | MARKET |   LAST PRICE   |
+|----------|---------------------|--------|----------------|
+| BRK.A    | BERKSHIRE HATH RG-A | NYSE   | 462 127.74 USD |
+|----------|---------------------|--------|----------------|
+| BRK.B    | BERKSHIRE HATH RG-B | NYSE   | 304.71 USD     |
+|----------|---------------------|--------|----------------|
+| BHLB     | BERKSHIRE HILLS     | NYSE   | 29.14 USD      |
+|----------|---------------------|--------|----------------|
+| BGRY     | BERKSHIRE GREY RG-A | NASDAQ | 1.30 USD       |
+|----------|---------------------|--------|----------------|
+| 1u0HN0.L | BERKSHIRE HATH RG-A | LSE    | 0.00 USD       |
+|----------|---------------------|--------|----------------|
+| 1zBRYN   | BERKSHIRE HATH RG-B | XETRA  | 285.10 EUR     |
+|----------|---------------------|--------|----------------|
+| 1u0R37.L | BERKSHIRE HATH RG-B | LSE    | 303.58 USD     |
+|----------|---------------------|--------|----------------|
 
 
-$ docker run --rm boursorama-finance-go quotes get 3kberk      
-date,3kberk
-19/02/2021,9.45
-18/02/2021,9.41
-16/02/2021,10.00
-11/02/2021,9.31
-10/02/2021,9.71
-09/02/2021,10.00
-08/02/2021,9.25
-04/02/2021,9.21
-03/02/2021,9.15
-02/02/2021,9.95
-28/01/2021,9.95
-26/01/2021,10.00
-25/01/2021,9.15
-22/01/2021,10.20
-19/01/2021,9.70
+$ docker run --rm boursorama-finance-go quotes get 3kberk
+date,brk.a
+01/03/2023,462 127.74
+28/02/2023,463 349.99
+27/02/2023,461 852.25
+24/02/2023,461 252.50
+23/02/2023,460 287.00
+22/02/2023,460 256.19
+21/02/2023,459 079.94
+17/02/2023,467 117.62
+16/02/2023,467 651.13
+15/02/2023,469 395.00
+14/02/2023,472 462.50
+13/02/2023,476 385.06
+10/02/2023,472 245.00
+09/02/2023,466 885.00
+08/02/2023,467 747.50
+07/02/2023,474 210.00
+06/02/2023,466 567.50
+03/02/2023,467 059.38
+02/02/2023,472 286.12
+01/02/2023,470 606.00
 ```
 
 ## Licensing
 
 The code in this project is licensed under GPL-3.0 License.
-

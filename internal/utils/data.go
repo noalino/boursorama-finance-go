@@ -12,8 +12,9 @@ import (
 
 type Asset struct {
 	Symbol    string `json:"symbol"`
-	Name      string `json:"name"`
 	LastPrice string `json:"last_price"`
+	Market		string `json:"market"`
+	Name      string `json:"name"`
 }
 
 type Quote struct {
@@ -55,6 +56,7 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 		}
 
 		asset.Symbol = splitUrl[symbolIndex]
+		asset.Market = strings.TrimSpace(cells.First().Next().Text())
 		asset.LastPrice = strings.TrimSpace(cells.First().Next().Next().Text())
 		assets = append(assets, asset)
 	})

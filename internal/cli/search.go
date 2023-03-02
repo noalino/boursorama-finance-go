@@ -45,14 +45,14 @@ Usage: quotes search NAME | ISIN`)
 		} else {
 			// Pretty print result in a table
 			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"Symbol", "Name", "Last price"})
+			table.SetHeader([]string{"Symbol", "Name", "Market", "Last price"})
 			table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 			table.SetCenterSeparator("|")
 			table.SetRowLine(true)
 
 			lines := [][]string{}
 			for _, asset := range assets {
-				line := []string{asset.Symbol, asset.Name, asset.LastPrice}
+				line := []string{asset.Symbol, asset.Name, asset.Market, asset.LastPrice}
 				lines = append(lines, line)
 			}
 

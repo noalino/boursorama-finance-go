@@ -28,12 +28,12 @@ paths:
       summary: Search for an asset
       operationId: searchAsset
       parameters:
-      - name: q
-        in: query
-        description: Value of the requested asset.
-        required: true
-        schema:
-          type: string
+        - name: q
+          in: query
+          description: Value of the requested asset.
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Return the assets if found any.
@@ -49,6 +49,8 @@ paths:
                     symbol:
                       type: string
                     last_price:
+                      type: string
+                    market:
                       type: string
         '400':
           description: Bad request
@@ -66,53 +68,53 @@ paths:
       summary: Get the asset's quotes
       operationId: getQuotesBySymbol
       parameters:
-      - name: symbol
-        in: path
-        description: The asset symbol.
-        required: true
-        schema:
-          type: string
-      - name: startDate
-        in: query
-        description: The date to start from.
-        required: false
-        schema:
-          type: string
-          default: 21/01/2021 (a month from now)
-      - name: duration
-        in: query
-        description: Specify the duration from the start date.
-        required: false
-        schema:
-          type: string
-          default: 3M
-          enum:
-            - 1M
-            - 2M
-            - 3M
-            - 4M
-            - 5M
-            - 6M
-            - 7M
-            - 8M
-            - 9M
-            - 10M
-            - 11M
-            - 1Y
-            - 2Y
-            - 3Y
-      - name: period
-        in: query
-        description: Specify the number of days between each quote.
-        required: false
-        schema:
-          type: string
-          default: '1'
-          enum:
-            - '1'
-            - '7'
-            - '30'
-            - '365'
+        - name: symbol
+          in: path
+          description: The asset symbol.
+          required: true
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: The date to start from.
+          required: false
+          schema:
+            type: string
+            default: 21/01/2021 (a month from now)
+        - name: duration
+          in: query
+          description: Specify the duration from the start date.
+          required: false
+          schema:
+            type: string
+            default: 3M
+            enum:
+              - 1M
+              - 2M
+              - 3M
+              - 4M
+              - 5M
+              - 6M
+              - 7M
+              - 8M
+              - 9M
+              - 10M
+              - 11M
+              - 1Y
+              - 2Y
+              - 3Y
+        - name: period
+          in: query
+          description: Specify the number of days between each quote.
+          required: false
+          schema:
+            type: string
+            default: '1'
+            enum:
+              - '1'
+              - '7'
+              - '30'
+              - '365'
       responses:
         '200':
           description: Return the quotes with dates.
