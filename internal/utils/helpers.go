@@ -54,6 +54,15 @@ func getHTMLDocument(url string) (*goquery.Document, error) {
 	return doc, nil
 }
 
+func getMaxPages(view *goquery.Document) int {
+	page, err := strconv.Atoi(view.Find("span.c-pagination__content").Last().Text())
+	if err != nil {
+		fmt.Println("Error during page conversion, return default page 1")
+		return 1
+	}
+	return page
+}
+
 func contains(values []string, query string) bool {
 	for _, value := range values {
 		if value == query {

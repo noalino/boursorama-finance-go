@@ -77,7 +77,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 		return nil, err
 	}
 
-	nbOfPages := doc.Find("span.c-pagination__content").Length()
+	nbOfPages := getMaxPages(doc)
 
 	scrapeQuotes := func() []Quote {
 		quotes := []Quote{}
