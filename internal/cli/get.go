@@ -8,7 +8,7 @@ import (
 
 	"github.com/leaanthony/clir"
 
-	"internal/utils"
+	"github.com/benoitgelineau/boursorama-finance-go/internal/utils"
 )
 
 func RegisterGetAction(cli *clir.Cli) {

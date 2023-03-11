@@ -2,13 +2,6 @@ module github.com/benoitgelineau/boursorama-finance-go
 
 go 1.13
 
-require internal/api v1.0.0
-replace internal/api => ./internal/api
-require internal/cli v1.0.0
-replace internal/cli => ./internal/cli
-require internal/utils v1.0.0
-replace internal/utils => ./internal/utils
-
 require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/andybalholm/cascadia v1.2.0 // indirect
