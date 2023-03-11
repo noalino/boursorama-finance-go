@@ -40,18 +40,18 @@ DD/MM/YYYY`,
 	get.Action(func() error {
 		otherArgs := get.OtherArgs()
 		if len(otherArgs) == 0 {
-			return errors.New("Too few arguments, please refer to the documentation by using `quotes get -help`")
+			return errors.New("too few arguments, please refer to the documentation by using `quotes get -help`")
 		}
 
 		symbol := otherArgs[0]
 		validSymbol := utils.ValidateInput(symbol)
 		if validSymbol == "" {
-			return errors.New("Symbol value must be valid and not empty.")
+			return errors.New("symbol value must be valid and not empty")
 		}
 
 		startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
 		if err != nil {
-			return fmt.Errorf("Wrong date format: %v\n", err)
+			return fmt.Errorf("wrong date format: %v", err)
 		}
 
 		quotes, err := utils.GetQuotes(validSymbol, startDateAsTime, duration, period)

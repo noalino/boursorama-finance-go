@@ -12,15 +12,15 @@ import (
 )
 
 type Asset struct {
-	Symbol		string	`json:"symbol"`
-	LastPrice	string	`json:"last_price"`
-	Market		string	`json:"market"`
-	Name			string	`json:"name"`
+	Symbol    string `json:"symbol"`
+	LastPrice string `json:"last_price"`
+	Market    string `json:"market"`
+	Name      string `json:"name"`
 }
 
 type Quote struct {
-	Date	string	`json:"date"`
-	Price	float64	`json:"price"`
+	Date  string  `json:"date"`
+	Price float64 `json:"price"`
 }
 
 func ScrapeSearchResult(query string) ([]Asset, error) {
@@ -34,7 +34,7 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 	var assets []Asset
 	view := doc.Find("[data-result-search]")
 
-	view.Find("tbody.c-table__body").First().Find("tr.c-table__row").Each(func (i int, s *goquery.Selection) {
+	view.Find("tbody.c-table__body").First().Find("tr.c-table__row").Each(func(i int, s *goquery.Selection) {
 		asset := Asset{}
 		cells := s.Find("td")
 		link := cells.First().Find(".c-link")
@@ -67,10 +67,10 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 
 func GetQuotes(symbol string, startDate time.Time, duration string, period string) ([]Quote, error) {
 	if ok := contains(DefaultDurations, duration); !ok {
-		return nil, fmt.Errorf("Duration must be one of %v", DefaultDurations)
+		return nil, fmt.Errorf("duration must be one of %v", DefaultDurations)
 	}
 	if ok := contains(DefaultPeriods, period); !ok {
-		return nil, fmt.Errorf("Period must be one of %v", DefaultPeriods)
+		return nil, fmt.Errorf("period must be one of %v", DefaultPeriods)
 	}
 
 	// First page request to get the number of pages to scrape
