@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/benoitgelineau/boursorama-finance-go/internal/utils"
+	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
 func RegisterHandlers(router *gin.Engine) {

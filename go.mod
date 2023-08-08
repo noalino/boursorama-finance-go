@@ -1,4 +1,4 @@
-module github.com/benoitgelineau/boursorama-finance-go
+module github.com/noalino/boursorama-finance-go
 
 go 1.13
 
