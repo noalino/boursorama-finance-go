@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	cli := clir.NewCli("Quotes", "A basic scraper tool to get financial assets quotes", "v1.1.1")
+	cli := clir.NewCli("Quotes", "A basic scraper tool to get financial assets quotes", "v1.1.2")
 
 	commands.RegisterSearchAction(cli)
 	commands.RegisterGetAction(cli)
