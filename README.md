@@ -9,7 +9,7 @@ Both an API and a CLI are available to use.
 Clone the repository:
 
 ```shell
-git clone https://github.com/benoitgelineau/boursorama-finance-go
+git clone https://github.com/noalino/boursorama-finance-go
 cd boursorama-finance-go
 ```
 
@@ -29,7 +29,7 @@ It starts the API on _localhost:8080_
 
 #### To run the CLI
 
-[Download](https://github.com/benoitgelineau/boursorama-finance-go/releases) and run the binary file.
+[Download](https://github.com/noalino/boursorama-finance-go/releases) and run the binary file.
 
 Or you can run it inside your terminal with Docker:
 
