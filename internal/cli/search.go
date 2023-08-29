@@ -22,9 +22,9 @@ Usage: quotes search [name | ISIN]`)
 
 	// Flags
 	var pretty bool
-	search.BoolFlag("pretty", "Display output in a table", &pretty)
+	search.BoolFlag("pretty", "Display output in a table.", &pretty)
 	var verbose bool
-	search.BoolFlag("verbose", "Log more info", &verbose)
+	search.BoolFlag("verbose", "Log more info.", &verbose)
 
 	// Actions
 	search.Action(func() error {
