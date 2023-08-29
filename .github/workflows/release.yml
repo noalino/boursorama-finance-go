@@ -2,24 +2,22 @@ name: Release
 
 on:
   push:
-    tags: 'v[0-9]+.[0-9]+.[0-9]+'
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # See https://github.com/goreleaser/goreleaser-action#workflow
-      -
-        name: Set up Go
+      - name: Set up Go
         uses: actions/setup-go@v3
         with:
           cache: true
-      -
-        name: Run GoReleaser
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
