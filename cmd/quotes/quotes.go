@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/leaanthony/clir"
 
@@ -15,6 +16,6 @@ func main() {
 	commands.RegisterGetAction(cli)
 
 	if err := cli.Run(); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 	}
 }
