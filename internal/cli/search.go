@@ -23,6 +23,8 @@ Usage: quotes search [name | ISIN]`)
 	// Flags
 	var pretty bool
 	search.BoolFlag("pretty", "Display output in a table", &pretty)
+	var verbose bool
+	search.BoolFlag("verbose", "Log more info", &verbose)
 
 	// Actions
 	search.Action(func() error {
@@ -37,7 +39,7 @@ Usage: quotes search [name | ISIN]`)
 			return errors.New("search value must be valid and not empty")
 		}
 
-		fmt.Printf("Searching for '%s'...\n", validQuery)
+		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", validQuery)
 		assets, err := utils.ScrapeSearchResult(validQuery)
 		if err != nil {
 			return err
@@ -48,7 +50,7 @@ Usage: quotes search [name | ISIN]`)
 			return nil
 		}
 
-		fmt.Println("Results found:")
+		utils.PrintlnOrVoid(verbose, "Results found:")
 
 		if pretty {
 			table := tablewriter.NewWriter(os.Stdout)

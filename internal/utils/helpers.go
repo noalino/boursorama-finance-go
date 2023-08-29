@@ -70,3 +70,15 @@ func contains(values []string, query string) bool {
 	}
 	return false
 }
+
+func PrintlnOrVoid(condition bool, args ...any) {
+	if condition {
+		fmt.Println(args...)
+	}
+}
+
+func PrintfOrVoid(condition bool, text string, args ...any) {
+	if condition {
+		fmt.Printf(text, args...)
+	}
+}
