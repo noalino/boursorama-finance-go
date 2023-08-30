@@ -9,7 +9,7 @@ Both an API and a CLI are available to use.
 Clone the repository:
 
 ```shell
-git clone https://github.com/benoitgelineau/boursorama-finance-go
+git clone https://github.com/noalino/boursorama-finance-go
 cd boursorama-finance-go
 ```
 
@@ -19,7 +19,7 @@ Then build the Docker image:
 docker build -t boursorama-finance-go .
 ```
 
-#### To run the API:
+#### To run the API
 
 ```shell
 docker run --rm --name boursorama-finance-go-api -p 8080:8080 boursorama-finance-go quotes-api
@@ -29,7 +29,7 @@ It starts the API on _localhost:8080_
 
 #### To run the CLI
 
-[Download](https://github.com/benoitgelineau/boursorama-finance-go/releases) and run the binary file.
+[Download](https://github.com/noalino/boursorama-finance-go/releases) and run the binary file.
 
 Or you can run it inside your terminal with Docker:
 
@@ -47,35 +47,46 @@ docker run --rm --name boursorama-finance-go-cli boursorama-finance-go quotes
 
 Available commands:
 
-- `search NAME | ISIN`
+- `search [NAME | ISIN]`
 
 ```text
-Usage: quotes search NAME | ISIN
+Quotes search - Search a financial asset
+
+Search a financial asset by name or ISIN and return the following information:
+Symbol, Name, Category, Last price
+
+Usage: quotes search [NAME | ISIN]
 
 Flags:
 
   -help
-    	Get help on the 'quotes search' command.
+     Get help on the 'quotes search' command.
+  -pretty
+     Display output in a table.
+  -verbose
+     Log more info.
 ```
 
 - `get [OPTIONS] SYMBOL`
 
 ```text
+Quotes get - Return quotes
+
 Usage: quotes get [OPTIONS] SYMBOL
 
 Flags:
 
   -duration string
-    	Specify the duration, it should be one of the following values:
-    	["1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"] (default "3M")
+     Specify the duration, it should be one of the following values:
+     ["1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"] (default "3M")
   -from string
-    	Specify the start date, it must be in the following format:
+     Specify the start date, it must be in the following format:
       DD/MM/YYYY (default "a month from now")
   -help
-    	Get help on the 'quotes get' command.
+     Get help on the 'quotes get' command.
   -period string
-    	Specify the period, it should be one the following values:
-    	["1","7","30","365"] (default "1")
+     Specify the period, it should be one the following values:
+     ["1","7","30","365"] (default "1")
 ```
 
 You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a **SYMBOL** value.
@@ -85,7 +96,7 @@ Choose the asset you were looking for and use the **SYMBOL** value in the `get` 
 Example:
 
 ```shell
-$ docker run --rm boursorama-finance-go quotes search berkshire
+$ quotes search -pretty -verbose berkshire
 Searching for 'berkshire'...
 Results found:
 
@@ -107,7 +118,7 @@ Results found:
 |----------|---------------------|--------|----------------|
 
 
-$ docker run --rm boursorama-finance-go quotes get 3kberk
+$ quotes get 3kberk
 date,brk.a
 01/03/2023,462127.74
 28/02/2023,463349.99

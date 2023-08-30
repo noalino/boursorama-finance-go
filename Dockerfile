@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine
+FROM golang:1.21-alpine
 
 WORKDIR /go/src/boursorama-finance-go
 COPY . .

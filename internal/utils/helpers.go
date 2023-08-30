@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -69,4 +70,21 @@ func contains(values []string, query string) bool {
 		}
 	}
 	return false
+}
+
+func PrintlnOrVoid(condition bool, args ...any) {
+	if condition {
+		fmt.Println(args...)
+	}
+}
+
+func PrintfOrVoid(condition bool, text string, args ...any) {
+	if condition {
+		fmt.Printf(text, args...)
+	}
+}
+
+func IsDataFromPipe() bool {
+	fi, _ := os.Stdin.Stat()
+	return (fi.Mode() & os.ModeCharDevice) == 0
 }

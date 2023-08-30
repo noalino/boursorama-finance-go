@@ -1,8 +1,10 @@
 package cli
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -17,11 +19,11 @@ func RegisterGetAction(cli *clir.Cli) {
 		`
 Usage: quotes get [OPTIONS] SYMBOL`)
 
-	now := time.Now()
-	// Default start date = a month from now
-	lastMonth := now.AddDate(0, -1, 0)
+	lastMonth := time.Now().AddDate(0, -1, 0)
 	startDate := lastMonth.Format(utils.LayoutISO)
 	defaultStartDate := "a month from now"
+
+	// Flags
 	get.StringFlag("from",
 		`Specify the start date, it must be in the following format:
 DD/MM/YYYY`,
@@ -37,13 +39,25 @@ DD/MM/YYYY`,
 		`Specify the period, it should be one the following values:
 [`+strings.Join(utils.DefaultPeriods, ", ")+`]`, &period)
 
+	// Actions
 	get.Action(func() error {
-		otherArgs := get.OtherArgs()
-		if len(otherArgs) == 0 {
-			return errors.New("too few arguments, please refer to the documentation by using `quotes get -help`")
+
+		var symbol string
+
+		if utils.IsDataFromPipe() {
+			s := bufio.NewScanner(os.Stdin)
+			for s.Scan() {
+				symbol = strings.TrimSpace(s.Text())
+				break
+			}
+		} else {
+			otherArgs := get.OtherArgs()
+			if len(otherArgs) == 0 {
+				return errors.New("too few arguments, please refer to the documentation by using `quotes get -help`")
+			}
+			symbol = otherArgs[0]
 		}
 
-		symbol := otherArgs[0]
 		validSymbol := utils.ValidateInput(symbol)
 		if validSymbol == "" {
 			return errors.New("symbol value must be valid and not empty")
@@ -61,12 +75,14 @@ DD/MM/YYYY`,
 
 		if len(quotes) == 0 {
 			fmt.Println("No quotes found.")
-		} else {
-			fmt.Printf("date,%s\n", symbol)
-			for _, quote := range quotes {
-				fmt.Printf("%s,%.2f\n", quote.Date, quote.Price)
-			}
+			return nil
 		}
+
+		fmt.Printf("date,%s\n", symbol)
+		for _, quote := range quotes {
+			fmt.Printf("%s,%.2f\n", quote.Date, quote.Price)
+		}
+
 		return nil
 	})
 }

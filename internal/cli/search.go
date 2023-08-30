@@ -16,12 +16,17 @@ func RegisterSearchAction(cli *clir.Cli) {
 	search.LongDescription(
 		`
 Search a financial asset by name or ISIN and return the following information:
------------------------------------------
-| Symbol | Name | Category | Last Price |
------------------------------------------
+Symbol, Name, Category, Last price
 
-Usage: quotes search NAME | ISIN`)
+Usage: quotes search [name | ISIN]`)
 
+	// Flags
+	var pretty bool
+	search.BoolFlag("pretty", "Display output in a table.", &pretty)
+	var verbose bool
+	search.BoolFlag("verbose", "Log more info.", &verbose)
+
+	// Actions
 	search.Action(func() error {
 		otherArgs := search.OtherArgs()
 		if len(otherArgs) == 0 {
@@ -34,7 +39,7 @@ Usage: quotes search NAME | ISIN`)
 			return errors.New("search value must be valid and not empty")
 		}
 
-		fmt.Printf("Searching for '%s'...\n", validQuery)
+		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", validQuery)
 		assets, err := utils.ScrapeSearchResult(validQuery)
 		if err != nil {
 			return err
@@ -42,8 +47,12 @@ Usage: quotes search NAME | ISIN`)
 
 		if len(assets) == 0 {
 			fmt.Println("No result found.")
-		} else {
-			// Pretty print result in a table
+			return nil
+		}
+
+		utils.PrintlnOrVoid(verbose, "Results found:")
+
+		if pretty {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"Symbol", "Name", "Market", "Last price"})
 			table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
@@ -57,8 +66,12 @@ Usage: quotes search NAME | ISIN`)
 			}
 
 			table.AppendBulk(lines)
-			fmt.Print("Results found:\n\n")
 			table.Render()
+		} else {
+			fmt.Println("symbol,name,market,last price")
+			for _, asset := range assets {
+				fmt.Printf("%s,%s,%s,%s\n", asset.Symbol, asset.Name, asset.Market, asset.LastPrice)
+			}
 		}
 
 		return nil

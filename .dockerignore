@@ -1,5 +1,7 @@
 .git
+.github
 Dockerfile
 .dockerignore
+.goreleaser.yaml
 README.md
 LICENSE
