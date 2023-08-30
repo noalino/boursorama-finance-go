@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -81,4 +82,9 @@ func PrintfOrVoid(condition bool, text string, args ...any) {
 	if condition {
 		fmt.Printf(text, args...)
 	}
+}
+
+func IsDataFromPipe() bool {
+	fi, _ := os.Stdin.Stat()
+	return (fi.Mode() & os.ModeCharDevice) == 0
 }
