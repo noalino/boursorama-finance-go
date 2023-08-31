@@ -38,8 +38,7 @@ func RegisterHandlers(router *gin.Engine) {
 			handleBadRequest(c, err)
 			return
 		}
-		// Default duration = 3 months
-		duration := c.DefaultQuery("duration", "3M")
+		duration := c.DefaultQuery("duration", options.DefaultDuration.String())
 		period := c.DefaultQuery("period", options.DefaultPeriod.String())
 
 		quotes, err := utils.GetQuotes(symbol, startDateAsTime, duration, period)

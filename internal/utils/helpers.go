@@ -17,8 +17,6 @@ const (
 	LayoutISO = "02/01/2006"
 )
 
-var DefaultDurations = []string{"1M", "2M", "3M", "4M", "5M", "6M", "7M", "8M", "9M", "10M", "11M", "1Y", "2Y", "3Y"}
-
 func getQuotesUrl(symbol string, startDate time.Time, duration string, period string, page int) string {
 	if page == 1 {
 		return BASE_URL + "/_formulaire-periode/?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
@@ -60,15 +58,6 @@ func getMaxPages(view *goquery.Document) int {
 		return 1
 	}
 	return page
-}
-
-func contains(values []string, query string) bool {
-	for _, value := range values {
-		if value == query {
-			return true
-		}
-	}
-	return false
 }
 
 func PrintlnOrVoid(condition bool, args ...any) {

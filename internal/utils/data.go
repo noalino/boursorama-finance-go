@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -67,8 +66,9 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 }
 
 func GetQuotes(symbol string, startDate time.Time, duration string, period string) ([]Quote, error) {
-	if ok := contains(DefaultDurations, duration); !ok {
-		return nil, fmt.Errorf("duration must be one of %v", DefaultDurations)
+	validDuration, err := options.Duration(duration).ConvertToInternal()
+	if err != nil {
+		return nil, err
 	}
 	validPeriod, err := options.Period(period).ConvertToInternal()
 	if err != nil {
@@ -76,7 +76,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 	}
 
 	// First page request to get the number of pages to scrape
-	url := getQuotesUrl(symbol, startDate, duration, validPeriod, 1)
+	url := getQuotesUrl(symbol, startDate, validDuration, validPeriod, 1)
 	doc, err := getHTMLDocument(url)
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 		var wg sync.WaitGroup
 		// Scrape by page
 		getPageQuotes := func(index int) ([]Quote, error) {
-			url = getQuotesUrl(symbol, startDate, duration, validPeriod, index+1)
+			url = getQuotesUrl(symbol, startDate, validDuration, validPeriod, index+1)
 			doc, err = getHTMLDocument(url)
 			if err != nil {
 				return nil, err

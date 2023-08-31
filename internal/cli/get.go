@@ -20,20 +20,20 @@ func RegisterGetAction(cli *clir.Cli) {
 		`
 Usage: quotes get [OPTIONS] SYMBOL`)
 
+	// Flags
 	lastMonth := time.Now().AddDate(0, -1, 0)
 	startDate := lastMonth.Format(utils.LayoutISO)
+	duration := options.DefaultDuration.String()
 	period := options.DefaultPeriod.String()
 
-	// Flags
 	get.StringFlag("from",
 		`Specify the start date, it must be in the following format:
 DD/MM/YYYY`,
 		&startDate)
 
-	duration := utils.DefaultDurations[2]
 	get.StringFlag("duration",
 		`Specify the duration, it should be one of the following values:
-[`+strings.Join(utils.DefaultDurations, ", ")+`]`, &duration)
+[`+options.DurationsList.String()+`]`, &duration)
 
 	get.StringFlag("period",
 		`Specify the period, it should be one the following values:
