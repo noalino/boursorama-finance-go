@@ -15,16 +15,16 @@ const (
 	BASE_URL = "https://www.boursorama.com"
 )
 
-func getQuotesUrl(symbol string, startDate string, duration string, period string, page int) string {
-	if page == 1 {
-		return BASE_URL + "/_formulaire-periode/?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
-	} else {
-		return BASE_URL + "/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
-	}
+func getSearchUrl(searchValue string) string {
+	return fmt.Sprintf("%s/recherche/_instruments/%s", BASE_URL, searchValue)
 }
 
-func getSearchUrl(searchValue string) string {
-	return BASE_URL + "/recherche/_instruments/" + searchValue
+func getQuotesUrl(symbol string, startDate string, duration string, period string, page int) string {
+	if page == 1 {
+		return fmt.Sprintf("%s/_formulaire-periode/?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s", BASE_URL, strings.ToUpper(symbol), startDate, duration, period)
+	} else {
+		return fmt.Sprintf("%s/_formulaire-periode/page-%s?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s", BASE_URL, strconv.Itoa(page), strings.ToUpper(symbol), startDate, duration, period)
+	}
 }
 
 func ValidateInput(input string) string {
