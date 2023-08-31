@@ -21,9 +21,8 @@ Symbol, Name, Category, Last price
 Usage: quotes search [name | ISIN]`)
 
 	// Flags
-	var pretty bool
+	var pretty, verbose bool
 	search.BoolFlag("pretty", "Display output in a table.", &pretty)
-	var verbose bool
 	search.BoolFlag("verbose", "Log more info.", &verbose)
 
 	// Actions
@@ -33,14 +32,10 @@ Usage: quotes search [name | ISIN]`)
 			return errors.New("too few arguments, please refer to the documentation by using `quotes search -help`")
 		}
 
-		query := otherArgs[0]
-		validQuery := utils.ValidateInput(query)
-		if validQuery == "" {
-			return errors.New("search value must be valid and not empty")
-		}
+		query := utils.SearchQuery{Value: otherArgs[0]}
 
-		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", validQuery)
-		assets, err := utils.ScrapeSearchResult(validQuery)
+		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", query)
+		assets, err := utils.ScrapeSearchResult(query)
 		if err != nil {
 			return err
 		}

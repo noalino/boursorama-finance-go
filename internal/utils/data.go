@@ -21,8 +21,13 @@ type Quote struct {
 	Price float64 `json:"price"`
 }
 
-func ScrapeSearchResult(query string) ([]Asset, error) {
-	url := getSearchUrl(query)
+func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
+	query, err := ValidateSearchQuery(unsafeQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	url := getSearchUrl(query.Value)
 	doc, err := getHTMLDocument(url)
 	if err != nil {
 		return nil, err

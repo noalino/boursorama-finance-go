@@ -11,17 +11,14 @@ import (
 
 func RegisterHandlers(router *gin.Engine) {
 	router.GET("/search", func(c *gin.Context) {
-		q := c.Query("q")
-		if q == "" {
-			handleBadRequest(c, "Missing query value")
-			return
-		}
+		query := utils.SearchQuery{Value: c.Query("q")}
 
-		results, err := utils.ScrapeSearchResult(q)
+		results, err := utils.ScrapeSearchResult(query)
 		if err != nil {
 			handleBadRequest(c, err)
 			return
 		}
+
 		c.JSON(http.StatusOK, results)
 	})
 
@@ -32,6 +29,7 @@ func RegisterHandlers(router *gin.Engine) {
 			Duration: c.DefaultQuery("duration", options.DefaultDuration.String()),
 			Period:   c.DefaultQuery("period", options.DefaultPeriod.String()),
 		}
+
 		quotes, err := utils.GetQuotes(query)
 		if err != nil {
 			handleBadRequest(c, err)
