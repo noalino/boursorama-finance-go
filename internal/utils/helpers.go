@@ -7,21 +7,19 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 const (
-	BASE_URL  = "https://www.boursorama.com"
-	LayoutISO = "02/01/2006"
+	BASE_URL = "https://www.boursorama.com"
 )
 
-func getQuotesUrl(symbol string, startDate time.Time, duration string, period string, page int) string {
+func getQuotesUrl(symbol string, startDate string, duration string, period string, page int) string {
 	if page == 1 {
-		return BASE_URL + "/_formulaire-periode/?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+		return BASE_URL + "/_formulaire-periode/?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
 	} else {
-		return BASE_URL + "/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
+		return BASE_URL + "/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
 	}
 }
 

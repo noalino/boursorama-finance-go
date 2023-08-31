@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -28,20 +27,11 @@ func RegisterHandlers(router *gin.Engine) {
 
 	router.GET("/quotes/:symbol", func(c *gin.Context) {
 		symbol := c.Param("symbol")
-		// https://github.com/gin-gonic/gin#custom-validators
-		now := time.Now()
-		lastMonth := now.AddDate(0, -1, 0)
-		// Default start date = a month from now
-		startDate := c.DefaultQuery("startDate", lastMonth.Format(utils.LayoutISO))
-		startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
-		if err != nil {
-			handleBadRequest(c, err)
-			return
-		}
+		startDate := c.DefaultQuery("startDate", options.DefaultFrom().String())
 		duration := c.DefaultQuery("duration", options.DefaultDuration.String())
 		period := c.DefaultQuery("period", options.DefaultPeriod.String())
 
-		quotes, err := utils.GetQuotes(symbol, startDateAsTime, duration, period)
+		quotes, err := utils.GetQuotes(symbol, startDate, duration, period)
 		if err != nil {
 			handleBadRequest(c, err)
 			return

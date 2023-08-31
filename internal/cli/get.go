@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/leaanthony/clir"
 
@@ -21,15 +20,14 @@ func RegisterGetAction(cli *clir.Cli) {
 Usage: quotes get [OPTIONS] SYMBOL`)
 
 	// Flags
-	lastMonth := time.Now().AddDate(0, -1, 0)
-	startDate := lastMonth.Format(utils.LayoutISO)
+	from := options.DefaultFrom().String()
 	duration := options.DefaultDuration.String()
 	period := options.DefaultPeriod.String()
 
 	get.StringFlag("from",
 		`Specify the start date, it must be in the following format:
 DD/MM/YYYY`,
-		&startDate)
+		&from)
 
 	get.StringFlag("duration",
 		`Specify the duration, it should be one of the following values:
@@ -63,12 +61,7 @@ DD/MM/YYYY`,
 			return errors.New("symbol value must be valid and not empty")
 		}
 
-		startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
-		if err != nil {
-			return fmt.Errorf("wrong date format: %v", err)
-		}
-
-		quotes, err := utils.GetQuotes(validSymbol, startDateAsTime, duration, period)
+		quotes, err := utils.GetQuotes(validSymbol, from, duration, period)
 		if err != nil {
 			return err
 		}

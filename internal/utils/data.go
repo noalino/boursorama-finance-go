@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/noalino/boursorama-finance-go/internal/options"
@@ -65,7 +64,11 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 	return assets, nil
 }
 
-func GetQuotes(symbol string, startDate time.Time, duration string, period string) ([]Quote, error) {
+func GetQuotes(symbol string, from string, duration string, period string) ([]Quote, error) {
+	validFrom, err := options.From(from).ConvertToInternal()
+	if err != nil {
+		return nil, err
+	}
 	validDuration, err := options.Duration(duration).ConvertToInternal()
 	if err != nil {
 		return nil, err
@@ -76,7 +79,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 	}
 
 	// First page request to get the number of pages to scrape
-	url := getQuotesUrl(symbol, startDate, validDuration, validPeriod, 1)
+	url := getQuotesUrl(symbol, validFrom, validDuration, validPeriod, 1)
 	doc, err := getHTMLDocument(url)
 	if err != nil {
 		return nil, err
@@ -117,7 +120,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 		var wg sync.WaitGroup
 		// Scrape by page
 		getPageQuotes := func(index int) ([]Quote, error) {
-			url = getQuotesUrl(symbol, startDate, validDuration, validPeriod, index+1)
+			url = getQuotesUrl(symbol, validFrom, validDuration, validPeriod, index+1)
 			doc, err = getHTMLDocument(url)
 			if err != nil {
 				return nil, err
