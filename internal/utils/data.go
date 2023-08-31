@@ -22,7 +22,7 @@ type Quote struct {
 }
 
 func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
-	query, err := ValidateSearchQuery(unsafeQuery)
+	query, err := unsafeQuery.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
 }
 
 func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
-	query, err := ValidateQuotesQuery(unsafeQuery)
+	query, err := unsafeQuery.Validate()
 	if err != nil {
 		return nil, err
 	}
