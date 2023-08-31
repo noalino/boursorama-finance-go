@@ -26,12 +26,13 @@ func RegisterHandlers(router *gin.Engine) {
 	})
 
 	router.GET("/quotes/:symbol", func(c *gin.Context) {
-		symbol := c.Param("symbol")
-		startDate := c.DefaultQuery("startDate", options.DefaultFrom().String())
-		duration := c.DefaultQuery("duration", options.DefaultDuration.String())
-		period := c.DefaultQuery("period", options.DefaultPeriod.String())
-
-		quotes, err := utils.GetQuotes(symbol, startDate, duration, period)
+		query := utils.QuotesQuery{
+			Symbol: c.Param("symbol"),
+			From:     c.DefaultQuery("startDate", options.DefaultFrom().String()),
+			Duration: c.DefaultQuery("duration", options.DefaultDuration.String()),
+			Period:   c.DefaultQuery("period", options.DefaultPeriod.String()),
+		}
+		quotes, err := utils.GetQuotes(query)
 		if err != nil {
 			handleBadRequest(c, err)
 			return

@@ -56,12 +56,13 @@ DD/MM/YYYY`,
 			symbol = otherArgs[0]
 		}
 
-		validSymbol := utils.ValidateInput(symbol)
-		if validSymbol == "" {
-			return errors.New("symbol value must be valid and not empty")
+		query := utils.QuotesQuery{
+			Symbol:   symbol,
+			From:     from,
+			Duration: duration,
+			Period:   period,
 		}
-
-		quotes, err := utils.GetQuotes(validSymbol, from, duration, period)
+		quotes, err := utils.GetQuotes(query)
 		if err != nil {
 			return err
 		}
