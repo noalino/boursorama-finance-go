@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/noalino/boursorama-finance-go/internal/options"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
@@ -39,8 +40,7 @@ func RegisterHandlers(router *gin.Engine) {
 		}
 		// Default duration = 3 months
 		duration := c.DefaultQuery("duration", "3M")
-		// Default period = daily
-		period := c.DefaultQuery("period", "1")
+		period := c.DefaultQuery("period", options.DefaultPeriod.String())
 
 		quotes, err := utils.GetQuotes(symbol, startDateAsTime, duration, period)
 		if err != nil {

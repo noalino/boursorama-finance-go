@@ -10,6 +10,7 @@ import (
 
 	"github.com/leaanthony/clir"
 
+	"github.com/noalino/boursorama-finance-go/internal/options"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
@@ -21,6 +22,7 @@ Usage: quotes get [OPTIONS] SYMBOL`)
 
 	lastMonth := time.Now().AddDate(0, -1, 0)
 	startDate := lastMonth.Format(utils.LayoutISO)
+	period := options.DefaultPeriod.String()
 
 	// Flags
 	get.StringFlag("from",
@@ -33,10 +35,9 @@ DD/MM/YYYY`,
 		`Specify the duration, it should be one of the following values:
 [`+strings.Join(utils.DefaultDurations, ", ")+`]`, &duration)
 
-	period := utils.DefaultPeriods[0]
 	get.StringFlag("period",
 		`Specify the period, it should be one the following values:
-[`+strings.Join(utils.DefaultPeriods, ", ")+`]`, &period)
+[`+options.PeriodsList.String()+`]`, &period)
 
 	// Actions
 	get.Action(func() error {
