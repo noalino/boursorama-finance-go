@@ -34,7 +34,7 @@ Usage: quotes search [name | ISIN]`)
 
 		query := utils.SearchQuery{Value: otherArgs[0]}
 
-		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", query)
+		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", query.Value)
 		assets, err := utils.ScrapeSearchResult(query)
 		if err != nil {
 			return err
