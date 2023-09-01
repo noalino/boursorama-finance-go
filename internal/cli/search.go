@@ -5,17 +5,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/leaanthony/clir"
 	"github.com/olekukonko/tablewriter"
 
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
-func RegisterSearchAction(cli *clir.Cli) {
-	search := cli.NewSubCommand("search", "Search a financial asset")
-	search.LongDescription(
-		`
-Search a financial asset by name or ISIN and return the following information:
+func (cli *Cli) RegisterSearchAction() {
+	search := cli.NewSubCommand("search", "Search a financial asset\n")
+	search.LongDescription(`Search a financial asset by name or ISIN and return the following information:
 Symbol, Name, Category, Last price
 
 Usage: quotes search [name | ISIN]`)

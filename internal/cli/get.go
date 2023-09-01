@@ -7,17 +7,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/leaanthony/clir"
-
 	"github.com/noalino/boursorama-finance-go/internal/options"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
-func RegisterGetAction(cli *clir.Cli) {
-	get := cli.NewSubCommand("get", "Return quotes")
-	get.LongDescription(
-		`
-Usage: quotes get [OPTIONS] SYMBOL`)
+func (cli *Cli) RegisterGetAction() {
+	get := cli.NewSubCommand("get", "Return quotes\n")
+	get.LongDescription("Usage: quotes get [OPTIONS] SYMBOL")
 
 	// Flags
 	from := options.DefaultFrom().String()

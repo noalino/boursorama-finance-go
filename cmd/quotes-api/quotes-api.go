@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	router := gin.Default()
+	router := api.Router{Engine: gin.Default()}
 
 	router.GET("/status", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -17,7 +17,7 @@ func main() {
 		})
 	})
 
-	api.RegisterHandlers(router)
+	router.RegisterHandlers()
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

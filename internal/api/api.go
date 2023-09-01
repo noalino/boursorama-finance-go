@@ -9,7 +9,11 @@ import (
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
-func RegisterHandlers(router *gin.Engine) {
+type Router struct {
+	*gin.Engine
+}
+
+func (router *Router) RegisterHandlers() {
 	router.GET("/search", func(c *gin.Context) {
 		query := utils.SearchQuery{Value: c.Query("q")}
 
