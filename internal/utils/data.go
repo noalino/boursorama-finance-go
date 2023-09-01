@@ -1,12 +1,10 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -23,8 +21,13 @@ type Quote struct {
 	Price float64 `json:"price"`
 }
 
-func ScrapeSearchResult(query string) ([]Asset, error) {
-	url := getSearchUrl(query)
+func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
+	query, err := unsafeQuery.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	url := getSearchUrl(query.Value)
 	doc, err := getHTMLDocument(url)
 	if err != nil {
 		return nil, err
@@ -65,16 +68,14 @@ func ScrapeSearchResult(query string) ([]Asset, error) {
 	return assets, nil
 }
 
-func GetQuotes(symbol string, startDate time.Time, duration string, period string) ([]Quote, error) {
-	if ok := contains(DefaultDurations, duration); !ok {
-		return nil, fmt.Errorf("duration must be one of %v", DefaultDurations)
-	}
-	if ok := contains(DefaultPeriods, period); !ok {
-		return nil, fmt.Errorf("period must be one of %v", DefaultPeriods)
+func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
+	query, err := unsafeQuery.Validate()
+	if err != nil {
+		return nil, err
 	}
 
 	// First page request to get the number of pages to scrape
-	url := getQuotesUrl(symbol, startDate, duration, period, 1)
+	url := getQuotesUrl(query, 1)
 	doc, err := getHTMLDocument(url)
 	if err != nil {
 		return nil, err
@@ -115,7 +116,7 @@ func GetQuotes(symbol string, startDate time.Time, duration string, period strin
 		var wg sync.WaitGroup
 		// Scrape by page
 		getPageQuotes := func(index int) ([]Quote, error) {
-			url = getQuotesUrl(symbol, startDate, duration, period, index+1)
+			url = getQuotesUrl(query, index+1)
 			doc, err = getHTMLDocument(url)
 			if err != nil {
 				return nil, err

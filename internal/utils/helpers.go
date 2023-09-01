@@ -3,37 +3,42 @@ package utils
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 const (
-	BASE_URL  = "https://www.boursorama.com"
-	LayoutISO = "02/01/2006"
+	BASE_URL = "https://www.boursorama.com"
 )
 
-var DefaultDurations = []string{"1M", "2M", "3M", "4M", "5M", "6M", "7M", "8M", "9M", "10M", "11M", "1Y", "2Y", "3Y"}
-var DefaultPeriods = []string{"1", "7", "30", "365"}
-
-func getQuotesUrl(symbol string, startDate time.Time, duration string, period string, page int) string {
-	if page == 1 {
-		return BASE_URL + "/_formulaire-periode/?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
-	} else {
-		return BASE_URL + "/_formulaire-periode/page-" + strconv.Itoa(page) + "?symbol=" + strings.ToUpper(symbol) + "&historic_search[startDate]=" + startDate.Format(LayoutISO) + "&historic_search[duration]=" + duration + "&historic_search[period]=" + period
-	}
-}
-
 func getSearchUrl(searchValue string) string {
-	return BASE_URL + "/recherche/_instruments/" + searchValue
+	return fmt.Sprintf("%s/recherche/_instruments/%s", BASE_URL, searchValue)
 }
 
-func ValidateInput(input string) string {
-	return url.QueryEscape(strings.TrimSpace(input))
+func getQuotesUrl(query QuotesQuery, page int) string {
+	if page == 1 {
+		return fmt.Sprintf(
+			"%s/_formulaire-periode/?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
+			BASE_URL,
+			strings.ToUpper(query.Symbol),
+			query.From,
+			query.Duration,
+			query.Period,
+		)
+	} else {
+		return fmt.Sprintf(
+			"%s/_formulaire-periode/page-%s?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
+			BASE_URL,
+			strconv.Itoa(page),
+			strings.ToUpper(query.Symbol),
+			query.From,
+			query.Duration,
+			query.Period,
+		)
+	}
 }
 
 func getHTMLDocument(url string) (*goquery.Document, error) {
@@ -61,15 +66,6 @@ func getMaxPages(view *goquery.Document) int {
 		return 1
 	}
 	return page
-}
-
-func contains(values []string, query string) bool {
-	for _, value := range values {
-		if value == query {
-			return true
-		}
-	}
-	return false
 }
 
 func PrintlnOrVoid(condition bool, args ...any) {

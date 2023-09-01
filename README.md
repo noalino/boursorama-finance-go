@@ -41,7 +41,7 @@ docker run --rm --name boursorama-finance-go-cli boursorama-finance-go quotes
 
 ### API
 
-[OpenAPI documentation](internal/api/openapi.yml)
+[OpenAPI documentation](api/openapi.yml)
 
 ### CLI
 

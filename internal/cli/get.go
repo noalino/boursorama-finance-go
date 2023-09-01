@@ -6,40 +6,44 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
-	"github.com/leaanthony/clir"
-
+	"github.com/noalino/boursorama-finance-go/internal/options"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
-func RegisterGetAction(cli *clir.Cli) {
-	get := cli.NewSubCommand("get", "Return quotes")
-	get.LongDescription(
-		`
-Usage: quotes get [OPTIONS] SYMBOL`)
+type getFlags struct {
+	duration string
+	from     string
+	period   string
+}
 
-	lastMonth := time.Now().AddDate(0, -1, 0)
-	startDate := lastMonth.Format(utils.LayoutISO)
-	defaultStartDate := "a month from now"
+func (cli *Cli) RegisterGetAction() {
+	get := cli.NewSubCommand("get", "Return quotes\n")
+	get.LongDescription("Usage: quotes get [OPTIONS] SYMBOL")
 
 	// Flags
-	get.StringFlag("from",
-		`Specify the start date, it must be in the following format:
-DD/MM/YYYY`,
-		&defaultStartDate)
+	flags := &getFlags{
+		duration: options.DefaultDuration.String(),
+		from:     options.DefaultFrom().String(),
+		period:   options.DefaultPeriod.String(),
+	}
 
-	duration := utils.DefaultDurations[2]
-	get.StringFlag("duration",
-		`Specify the duration, it should be one of the following values:
-[`+strings.Join(utils.DefaultDurations, ", ")+`]`, &duration)
+	get.StringFlag(
+		"from",
+		"Specify the start date, it must be in the following format:\nDD/MM/YYYY",
+		&flags.from)
 
-	period := utils.DefaultPeriods[0]
-	get.StringFlag("period",
-		`Specify the period, it should be one the following values:
-[`+strings.Join(utils.DefaultPeriods, ", ")+`]`, &period)
+	get.StringFlag(
+		"duration",
+		fmt.Sprintf("Specify the duration, it should be one of the following values:\n[%s]", options.DurationsList),
+		&flags.duration)
 
-	// Actions
+	get.StringFlag(
+		"period",
+		fmt.Sprintf("Specify the period, it should be one of the following values:\n[%s]", options.PeriodsList),
+		&flags.period)
+
+	// Action
 	get.Action(func() error {
 
 		var symbol string
@@ -58,17 +62,13 @@ DD/MM/YYYY`,
 			symbol = otherArgs[0]
 		}
 
-		validSymbol := utils.ValidateInput(symbol)
-		if validSymbol == "" {
-			return errors.New("symbol value must be valid and not empty")
+		query := utils.QuotesQuery{
+			Symbol:   symbol,
+			From:     flags.from,
+			Duration: flags.duration,
+			Period:   flags.period,
 		}
-
-		startDateAsTime, err := time.Parse(utils.LayoutISO, startDate)
-		if err != nil {
-			return fmt.Errorf("wrong date format: %v", err)
-		}
-
-		quotes, err := utils.GetQuotes(validSymbol, startDateAsTime, duration, period)
+		quotes, err := utils.GetQuotes(query)
 		if err != nil {
 			return err
 		}

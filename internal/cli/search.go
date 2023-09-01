@@ -5,42 +5,42 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/leaanthony/clir"
 	"github.com/olekukonko/tablewriter"
 
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
-func RegisterSearchAction(cli *clir.Cli) {
-	search := cli.NewSubCommand("search", "Search a financial asset")
-	search.LongDescription(
-		`
-Search a financial asset by name or ISIN and return the following information:
+type searchFlags struct {
+	pretty  bool
+	verbose bool
+}
+
+func (cli *Cli) RegisterSearchAction() {
+	search := cli.NewSubCommand("search", "Search a financial asset\n")
+	search.LongDescription(`Search a financial asset by name or ISIN and return the following information:
 Symbol, Name, Category, Last price
 
 Usage: quotes search [name | ISIN]`)
 
 	// Flags
-	var pretty bool
-	search.BoolFlag("pretty", "Display output in a table.", &pretty)
-	var verbose bool
-	search.BoolFlag("verbose", "Log more info.", &verbose)
+	flags := &searchFlags{
+		pretty:  false,
+		verbose: false,
+	}
+	search.BoolFlag("pretty", "Display output in a table.", &flags.pretty)
+	search.BoolFlag("verbose", "Log more info.", &flags.verbose)
 
-	// Actions
+	// Action
 	search.Action(func() error {
 		otherArgs := search.OtherArgs()
 		if len(otherArgs) == 0 {
 			return errors.New("too few arguments, please refer to the documentation by using `quotes search -help`")
 		}
 
-		query := otherArgs[0]
-		validQuery := utils.ValidateInput(query)
-		if validQuery == "" {
-			return errors.New("search value must be valid and not empty")
-		}
+		query := utils.SearchQuery{Value: otherArgs[0]}
 
-		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", validQuery)
-		assets, err := utils.ScrapeSearchResult(validQuery)
+		utils.PrintfOrVoid(flags.verbose, "Searching for '%s'...\n", query.Value)
+		assets, err := utils.ScrapeSearchResult(query)
 		if err != nil {
 			return err
 		}
@@ -50,9 +50,9 @@ Usage: quotes search [name | ISIN]`)
 			return nil
 		}
 
-		utils.PrintlnOrVoid(verbose, "Results found:")
+		utils.PrintlnOrVoid(flags.verbose, "Results found:")
 
-		if pretty {
+		if flags.pretty {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"Symbol", "Name", "Market", "Last price"})
 			table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
