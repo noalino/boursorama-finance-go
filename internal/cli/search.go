@@ -10,6 +10,11 @@ import (
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
+type searchFlags struct {
+	pretty  bool
+	verbose bool
+}
+
 func (cli *Cli) RegisterSearchAction() {
 	search := cli.NewSubCommand("search", "Search a financial asset\n")
 	search.LongDescription(`Search a financial asset by name or ISIN and return the following information:
@@ -18,11 +23,14 @@ Symbol, Name, Category, Last price
 Usage: quotes search [name | ISIN]`)
 
 	// Flags
-	var pretty, verbose bool
-	search.BoolFlag("pretty", "Display output in a table.", &pretty)
-	search.BoolFlag("verbose", "Log more info.", &verbose)
+	flags := &searchFlags{
+		pretty:  false,
+		verbose: false,
+	}
+	search.BoolFlag("pretty", "Display output in a table.", &flags.pretty)
+	search.BoolFlag("verbose", "Log more info.", &flags.verbose)
 
-	// Actions
+	// Action
 	search.Action(func() error {
 		otherArgs := search.OtherArgs()
 		if len(otherArgs) == 0 {
@@ -31,7 +39,7 @@ Usage: quotes search [name | ISIN]`)
 
 		query := utils.SearchQuery{Value: otherArgs[0]}
 
-		utils.PrintfOrVoid(verbose, "Searching for '%s'...\n", query.Value)
+		utils.PrintfOrVoid(flags.verbose, "Searching for '%s'...\n", query.Value)
 		assets, err := utils.ScrapeSearchResult(query)
 		if err != nil {
 			return err
@@ -42,9 +50,9 @@ Usage: quotes search [name | ISIN]`)
 			return nil
 		}
 
-		utils.PrintlnOrVoid(verbose, "Results found:")
+		utils.PrintlnOrVoid(flags.verbose, "Results found:")
 
-		if pretty {
+		if flags.pretty {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"Symbol", "Name", "Market", "Last price"})
 			table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})

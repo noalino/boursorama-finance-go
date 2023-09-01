@@ -11,29 +11,39 @@ import (
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
+type getFlags struct {
+	duration string
+	from     string
+	period   string
+}
+
 func (cli *Cli) RegisterGetAction() {
 	get := cli.NewSubCommand("get", "Return quotes\n")
 	get.LongDescription("Usage: quotes get [OPTIONS] SYMBOL")
 
 	// Flags
-	from := options.DefaultFrom().String()
-	duration := options.DefaultDuration.String()
-	period := options.DefaultPeriod.String()
+	flags := &getFlags{
+		duration: options.DefaultDuration.String(),
+		from:     options.DefaultFrom().String(),
+		period:   options.DefaultPeriod.String(),
+	}
 
-	get.StringFlag("from",
-		`Specify the start date, it must be in the following format:
-DD/MM/YYYY`,
-		&from)
+	get.StringFlag(
+		"from",
+		"Specify the start date, it must be in the following format:\nDD/MM/YYYY",
+		&flags.from)
 
-	get.StringFlag("duration",
-		`Specify the duration, it should be one of the following values:
-[`+options.DurationsList.String()+`]`, &duration)
+	get.StringFlag(
+		"duration",
+		fmt.Sprintf("Specify the duration, it should be one of the following values:\n[%s]", options.DurationsList),
+		&flags.duration)
 
-	get.StringFlag("period",
-		`Specify the period, it should be one the following values:
-[`+options.PeriodsList.String()+`]`, &period)
+	get.StringFlag(
+		"period",
+		fmt.Sprintf("Specify the period, it should be one of the following values:\n[%s]", options.PeriodsList),
+		&flags.period)
 
-	// Actions
+	// Action
 	get.Action(func() error {
 
 		var symbol string
@@ -54,9 +64,9 @@ DD/MM/YYYY`,
 
 		query := utils.QuotesQuery{
 			Symbol:   symbol,
-			From:     from,
-			Duration: duration,
-			Period:   period,
+			From:     flags.from,
+			Duration: flags.duration,
+			Period:   flags.period,
 		}
 		quotes, err := utils.GetQuotes(query)
 		if err != nil {
