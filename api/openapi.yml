@@ -120,16 +120,16 @@ paths:
               - 3Y
         - name: period
           in: query
-          description: Specify the number of days between each quote.
+          description: Specify the period.
           required: false
           schema:
             type: string
-            default: '1'
+            default: daily
             enum:
-              - '1'
-              - '7'
-              - '30'
-              - '365'
+              - daily
+              - weekly
+              - monthly
+              - yearly
       responses:
         '200':
           description: Return the quotes with dates.

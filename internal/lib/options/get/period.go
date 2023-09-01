@@ -9,10 +9,10 @@ type Period string
 type Periods []Period
 
 const (
-	daily   Period = "1"
-	weekly  Period = "7"
-	monthly Period = "30"
-	yearly  Period = "365"
+	daily   Period = "daily"
+	weekly  Period = "weekly"
+	monthly Period = "monthly"
+	yearly  Period = "yearly"
 )
 
 var DefaultPeriod = daily

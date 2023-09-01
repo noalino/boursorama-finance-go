@@ -88,7 +88,7 @@ Flags:
      Get help on the 'quotes get' command.
   -period string
      Specify the period, it should be one the following values:
-     ["1","7","30","365"] (default "1")
+     ["daily","weekly","monthly","yearly"] (default "daily")
 ```
 
 You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a **SYMBOL** value.
