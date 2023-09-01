@@ -14,7 +14,7 @@ func main() {
 		Cli: clir.NewCli(
 			"quotes",
 			"A basic scraper tool to get financial assets quotes",
-			"v1.2.0",
+			"v1.2.1",
 		),
 	}
 
