@@ -39,7 +39,7 @@ func (router *Router) RegisterHandlers() {
 	router.GET("/quotes/:symbol", func(c *gin.Context) {
 		query := lib.GetQuery{
 			Symbol:   c.Param("symbol"),
-			From:     c.DefaultQuery("startDate", options.DefaultFrom().String()),
+			From:     c.DefaultQuery("from", options.DefaultFrom().String()),
 			Duration: c.DefaultQuery("duration", options.DefaultDuration.String()),
 			Period:   c.DefaultQuery("period", options.DefaultPeriod.String()),
 		}

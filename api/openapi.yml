@@ -89,7 +89,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: startDate
+        - name: from
           in: query
           description: The date to start from (default is a month from now).
           required: false
