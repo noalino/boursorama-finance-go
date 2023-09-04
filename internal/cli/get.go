@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/noalino/boursorama-finance-go/internal/models"
 	"github.com/noalino/boursorama-finance-go/internal/options"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )

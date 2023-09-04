@@ -7,21 +7,11 @@ import (
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
+
+	"github.com/noalino/boursorama-finance-go/internal/models"
 )
 
-type Asset struct {
-	Symbol    string `json:"symbol"`
-	LastPrice string `json:"last_price"`
-	Market    string `json:"market"`
-	Name      string `json:"name"`
-}
-
-type Quote struct {
-	Date  string  `json:"date"`
-	Price float64 `json:"price"`
-}
-
-func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
+func ScrapeSearchResult(unsafeQuery SearchQuery) (models.Assets, error) {
 	query, err := unsafeQuery.Validate()
 	if err != nil {
 		return nil, err
@@ -34,11 +24,11 @@ func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
 	}
 
 	// Find the searched results
-	var assets []Asset
+	var assets models.Assets
 	view := doc.Find("[data-result-search]")
 
 	view.Find("tbody.c-table__body").First().Find("tr.c-table__row").Each(func(i int, s *goquery.Selection) {
-		asset := Asset{}
+		asset := models.Asset{}
 		cells := s.Find("td")
 		link := cells.First().Find(".c-link")
 
@@ -68,7 +58,7 @@ func ScrapeSearchResult(unsafeQuery SearchQuery) ([]Asset, error) {
 	return assets, nil
 }
 
-func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
+func GetQuotes(unsafeQuery QuotesQuery) (models.Quotes, error) {
 	query, err := unsafeQuery.Validate()
 	if err != nil {
 		return nil, err
@@ -83,15 +73,15 @@ func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
 
 	nbOfPages := getMaxPages(doc)
 
-	scrapeQuotes := func() []Quote {
-		quotes := []Quote{}
+	scrapeQuotes := func() models.Quotes {
+		quotes := models.Quotes{}
 		doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
 			// Escape first row (table header)
 			if i == 0 {
 				return
 			}
 			firstCell := s.Find(".c-table__cell").First()
-			quote := Quote{}
+			quote := models.Quote{}
 			quote.Date = strings.TrimSpace(firstCell.Text())
 			price, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimSpace(firstCell.Next().Text()), " ", ""), 64)
 			if err != nil {
@@ -103,7 +93,7 @@ func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
 		return quotes
 	}
 
-	var allQuotes []Quote
+	var allQuotes models.Quotes
 
 	// Fetch quotes concurrently if there is more than one page
 	if nbOfPages < 2 {
@@ -115,7 +105,7 @@ func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
 
 		var wg sync.WaitGroup
 		// Scrape by page
-		getPageQuotes := func(index int) ([]Quote, error) {
+		getPageQuotes := func(index int) (models.Quotes, error) {
 			url = getQuotesUrl(query, index+1)
 			doc, err = getHTMLDocument(url)
 			if err != nil {
@@ -124,7 +114,7 @@ func GetQuotes(unsafeQuery QuotesQuery) ([]Quote, error) {
 			return scrapeQuotes(), nil
 		}
 		// Init slice to return quotes from all pages
-		quotesByPage := make([][]Quote, nbOfPages)
+		quotesByPage := make([]models.Quotes, nbOfPages)
 		// Use first page request to scrap quotes
 		quotesByPage[0] = scrapeQuotes()
 		// Fetch the remaining pages
