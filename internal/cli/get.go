@@ -81,7 +81,7 @@ func (cli *Cli) RegisterGetAction() {
 
 		fmt.Printf("date,%s\n", symbol)
 		for _, quote := range quotes {
-			fmt.Printf("%s,%.2f\n", quote.Date, quote.Price)
+			fmt.Printf("%s,%.2f\n", quote.Date.Format(models.DateFormat), quote.Price)
 		}
 
 		return nil

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 
@@ -82,7 +83,11 @@ func GetQuotes(unsafeQuery QuotesQuery) (models.Quotes, error) {
 			}
 			firstCell := s.Find(".c-table__cell").First()
 			quote := models.Quote{}
-			quote.Date = strings.TrimSpace(firstCell.Text())
+			date, err := time.Parse(models.DateFormat, strings.TrimSpace(firstCell.Text()))
+			if err != nil {
+				return
+			}
+			quote.Date = models.QuoteDate{Time: date}
 			price, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimSpace(firstCell.Next().Text()), " ", ""), 64)
 			if err != nil {
 				quote.Price = 0.0
