@@ -24,31 +24,32 @@ func SanitizeUrlInput(input string) string {
 }
 
 func (q SearchQuery) Validate() (SearchQuery, error) {
-	value := SanitizeUrlInput(q.Value)
-	if value == "" {
-		return SearchQuery{}, errors.New("search value must be valid and not empty")
+	q.Value = SanitizeUrlInput(q.Value)
+	if q.Value == "" {
+		return q, errors.New("search value must be valid and not empty")
 	}
 
-	return SearchQuery{value}, nil
+	return q, nil
 }
 
 func (q QuotesQuery) Validate() (QuotesQuery, error) {
-	symbol := SanitizeUrlInput(q.Symbol)
-	if symbol == "" {
-		return QuotesQuery{}, errors.New("symbol value must be valid and not empty")
+	q.Symbol = SanitizeUrlInput(q.Symbol)
+	if q.Symbol == "" {
+		return q, errors.New("symbol value must be valid and not empty")
 	}
-	from, err := options.From(q.From).ConvertToInternal()
+	var err error
+	q.From, err = options.From(q.From).ConvertToInternal()
 	if err != nil {
-		return QuotesQuery{}, err
+		return q, err
 	}
-	duration, err := options.Duration(q.Duration).ConvertToInternal()
+	q.Duration, err = options.Duration(q.Duration).ConvertToInternal()
 	if err != nil {
-		return QuotesQuery{}, err
+		return q, err
 	}
-	period, err := options.Period(q.Period).ConvertToInternal()
+	q.Period, err = options.Period(q.Period).ConvertToInternal()
 	if err != nil {
-		return QuotesQuery{}, err
+		return q, err
 	}
 
-	return QuotesQuery{symbol, from, duration, period}, nil
+	return q, nil
 }
