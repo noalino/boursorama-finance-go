@@ -7,6 +7,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
+	"github.com/noalino/boursorama-finance-go/internal/lib"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
@@ -37,10 +38,10 @@ Usage: quotes search [name | ISIN]`)
 			return errors.New("too few arguments, please refer to the documentation by using `quotes search -help`")
 		}
 
-		query := utils.SearchQuery{Value: otherArgs[0]}
+		query := lib.SearchQuery{Value: otherArgs[0]}
 
 		utils.PrintfOrVoid(flags.verbose, "Searching for '%s'...\n", query.Value)
-		assets, err := utils.ScrapeSearchResult(query)
+		assets, err := lib.Search(query)
 		if err != nil {
 			return err
 		}

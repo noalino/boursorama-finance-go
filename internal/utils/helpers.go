@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -10,38 +11,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const (
-	BASE_URL = "https://www.boursorama.com"
-)
-
-func getSearchUrl(searchValue string) string {
-	return fmt.Sprintf("%s/recherche/_instruments/%s", BASE_URL, searchValue)
+func SanitizeUrlInput(input string) string {
+	return url.QueryEscape(strings.TrimSpace(input))
 }
 
-func getQuotesUrl(query QuotesQuery, page int) string {
-	if page == 1 {
-		return fmt.Sprintf(
-			"%s/_formulaire-periode/?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
-			BASE_URL,
-			strings.ToUpper(query.Symbol),
-			query.From,
-			query.Duration,
-			query.Period,
-		)
-	} else {
-		return fmt.Sprintf(
-			"%s/_formulaire-periode/page-%s?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
-			BASE_URL,
-			strconv.Itoa(page),
-			strings.ToUpper(query.Symbol),
-			query.From,
-			query.Duration,
-			query.Period,
-		)
-	}
-}
-
-func getHTMLDocument(url string) (*goquery.Document, error) {
+func GetHTMLDocument(url string) (*goquery.Document, error) {
 	// Request the HTML page
 	res, err := http.Get(url)
 	if err != nil {
@@ -60,7 +34,7 @@ func getHTMLDocument(url string) (*goquery.Document, error) {
 	return doc, nil
 }
 
-func getMaxPages(view *goquery.Document) int {
+func GetMaxPages(view *goquery.Document) int {
 	page, err := strconv.Atoi(view.Find("span.c-pagination__content").Last().Text())
 	if err != nil {
 		return 1
