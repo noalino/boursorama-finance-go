@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -157,5 +158,6 @@ func GetQuotes(unsafeQuery QuotesQuery) (models.Quotes, error) {
 		}
 	}
 
+	sort.Sort(allQuotes)
 	return allQuotes, nil
 }
