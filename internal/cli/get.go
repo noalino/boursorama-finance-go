@@ -7,7 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/noalino/boursorama-finance-go/internal/options"
+	"github.com/noalino/boursorama-finance-go/internal/lib"
+	options "github.com/noalino/boursorama-finance-go/internal/lib/options/get"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
@@ -62,13 +63,13 @@ func (cli *Cli) RegisterGetAction() {
 			symbol = otherArgs[0]
 		}
 
-		query := utils.QuotesQuery{
+		query := lib.GetQuery{
 			Symbol:   symbol,
 			From:     flags.from,
 			Duration: flags.duration,
 			Period:   flags.period,
 		}
-		quotes, err := utils.GetQuotes(query)
+		quotes, err := lib.Get(query)
 		if err != nil {
 			return err
 		}
@@ -80,7 +81,7 @@ func (cli *Cli) RegisterGetAction() {
 
 		fmt.Printf("date,%s\n", symbol)
 		for _, quote := range quotes {
-			fmt.Printf("%s,%.2f\n", quote.Date, quote.Price)
+			fmt.Printf("%s,%.2f\n", quote.Date.Format(lib.GetResultDateFormat), quote.Price)
 		}
 
 		return nil
