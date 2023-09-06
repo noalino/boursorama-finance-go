@@ -159,6 +159,8 @@ date,brk.a
 31/07/2023,533894.00
 ```
 
+See [examples](./examples/README.md) if you want to know how to get quotes for multiple assets.
+
 ## Licensing
 
 The code in this project is licensed under GPL-3.0 License.
