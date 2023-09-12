@@ -56,7 +56,7 @@ Usage: quotes search [name | ISIN]`)
 		if flags.pretty {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"Symbol", "Name", "Market", "Last price"})
-			table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+			table.SetBorders(tablewriter.Border{Left: true, Top: true, Right: true, Bottom: true})
 			table.SetCenterSeparator("|")
 			table.SetRowLine(true)
 
