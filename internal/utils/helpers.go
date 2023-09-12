@@ -34,12 +34,12 @@ func GetHTMLDocument(url string) (*goquery.Document, error) {
 	return doc, nil
 }
 
-func GetMaxPages(view *goquery.Document) int {
-	page, err := strconv.Atoi(view.Find("span.c-pagination__content").Last().Text())
+func GetMaxPages(view *goquery.Document) uint16 {
+	page, err := strconv.ParseUint(view.Find("span.c-pagination__content").Last().Text(), 10, 16)
 	if err != nil {
 		return 1
 	}
-	return page
+	return uint16(page)
 }
 
 func PrintlnOrVoid(condition bool, args ...any) {
