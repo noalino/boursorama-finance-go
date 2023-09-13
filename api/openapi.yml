@@ -1,10 +1,11 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Quotes API
   description: A basic API to scrape financial assets quotes from the boursorama website.
-  version: 1.3.0
+  version: 1.4.0
   license:
     name: GPL-3.0
+    url: https://github.com/noalino/boursorama-finance-go/blob/main/LICENSE
 servers:
   - url: http://localhost:8080
 paths:
@@ -34,24 +35,38 @@ paths:
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Select the page.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: Return the assets if found any.
           content:
             'application/json':
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    symbol:
-                      type: string
-                    last_price:
-                      type: string
-                    market:
-                      type: string
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                  total_pages_count:
+                    type: integer
+                  values:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        symbol:
+                          type: string
+                        last_price:
+                          type: string
+                        market:
+                          type: string
         '400':
           description: Bad request
           content:
@@ -76,11 +91,11 @@ paths:
             type: string
         - name: startDate
           in: query
-          description: The date to start from.
+          description: The date to start from (default is a month from now).
           required: false
           schema:
             type: string
-            default: 21/01/2021 (a month from now)
+            default: 21/08/2023
         - name: duration
           in: query
           description: Specify the duration from the start date.

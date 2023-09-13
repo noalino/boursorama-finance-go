@@ -76,27 +76,16 @@ func (q GetResults) Swap(i, j int) {
 	q[i], q[j] = q[j], q[i]
 }
 
-func getQuotesUrl(query GetQuery, page int) string {
-	if page == 1 {
-		return fmt.Sprintf(
-			"%s/_formulaire-periode/?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
-			utils.BASE_URL,
-			strings.ToUpper(query.Symbol),
-			query.From,
-			query.Duration,
-			query.Period,
-		)
-	} else {
-		return fmt.Sprintf(
-			"%s/_formulaire-periode/page-%s?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
-			utils.BASE_URL,
-			strconv.Itoa(page),
-			strings.ToUpper(query.Symbol),
-			query.From,
-			query.Duration,
-			query.Period,
-		)
-	}
+func getQuotesUrl(query GetQuery, page uint16) string {
+	return fmt.Sprintf(
+		"%s/_formulaire-periode/page-%d?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
+		utils.BASE_URL,
+		page,
+		strings.ToUpper(query.Symbol),
+		query.From,
+		query.Duration,
+		query.Period,
+	)
 }
 
 func Get(unsafeQuery GetQuery) (GetResults, error) {
@@ -150,7 +139,7 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 
 		var wg sync.WaitGroup
 		// Scrape by page
-		getPageQuotes := func(index int) (GetResults, error) {
+		getPageQuotes := func(index uint16) (GetResults, error) {
 			url = getQuotesUrl(query, index+1)
 			doc, err = utils.GetHTMLDocument(url)
 			if err != nil {
@@ -163,10 +152,10 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 		// Use first page request to scrap quotes
 		quotesByPage[0] = scrapeQuotes()
 		// Fetch the remaining pages
-		for i := 1; i < nbOfPages; i++ {
+		for i := uint16(1); i < nbOfPages; i++ {
 			wg.Add(1)
 
-			go func(index int) {
+			go func(index uint16) {
 				defer wg.Done()
 
 				quotesByPage[index], err = getPageQuotes(index)

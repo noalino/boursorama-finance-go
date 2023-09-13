@@ -61,6 +61,8 @@ Flags:
 
   -help
      Get help on the 'quotes search' command.
+  -page uint
+     Select page. (default 1)
   -pretty
      Display output in a table.
   -verbose
@@ -99,6 +101,7 @@ Example:
 $ quotes search --pretty --verbose berkshire
 Searching for 'berkshire'...
 Results found:
+|----------|---------------------|--------------------|----------------|
 |  SYMBOL  |        NAME         |       MARKET       |   LAST PRICE   |
 |----------|---------------------|--------------------|----------------|
 | BHLB     | BERKSHIRE HILLS     | NYSE               | 21.78 USD      |

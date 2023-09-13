@@ -12,6 +12,7 @@ import (
 )
 
 type searchFlags struct {
+	page    uint
 	pretty  bool
 	verbose bool
 }
@@ -25,9 +26,11 @@ Usage: quotes search [name | ISIN]`)
 
 	// Flags
 	flags := &searchFlags{
+		page:    1,
 		pretty:  false,
 		verbose: false,
 	}
+	search.UintFlag("page", "Select page.", &flags.page)
 	search.BoolFlag("pretty", "Display output in a table.", &flags.pretty)
 	search.BoolFlag("verbose", "Log more info.", &flags.verbose)
 
@@ -38,30 +41,30 @@ Usage: quotes search [name | ISIN]`)
 			return errors.New("too few arguments, please refer to the documentation by using `quotes search -help`")
 		}
 
-		query := lib.SearchQuery{Value: otherArgs[0]}
+		query := lib.SearchQuery{Value: otherArgs[0], Page: uint16(flags.page)}
 
 		utils.PrintfOrVoid(flags.verbose, "Searching for '%s'...\n", query.Value)
-		assets, err := lib.Search(query)
+		result, err := lib.Search(query)
 		if err != nil {
 			return err
 		}
 
-		if len(assets) == 0 {
+		if len(result.Assets) == 0 {
 			fmt.Println("No result found.")
 			return nil
 		}
 
-		utils.PrintlnOrVoid(flags.verbose, "Results found:")
+		fmt.Printf("Results found (page %d/%d):\n", result.Page, result.TotalPages)
 
 		if flags.pretty {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"Symbol", "Name", "Market", "Last price"})
-			table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+			table.SetBorders(tablewriter.Border{Left: true, Top: true, Right: true, Bottom: true})
 			table.SetCenterSeparator("|")
 			table.SetRowLine(true)
 
 			lines := [][]string{}
-			for _, asset := range assets {
+			for _, asset := range result.Assets {
 				line := []string{asset.Symbol, asset.Name, asset.Market, asset.LastPrice}
 				lines = append(lines, line)
 			}
@@ -70,7 +73,7 @@ Usage: quotes search [name | ISIN]`)
 			table.Render()
 		} else {
 			fmt.Println("symbol,name,market,last price")
-			for _, asset := range assets {
+			for _, asset := range result.Assets {
 				fmt.Printf("%s,%s,%s,%s\n", asset.Symbol, asset.Name, asset.Market, asset.LastPrice)
 			}
 		}
