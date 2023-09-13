@@ -61,6 +61,8 @@ Flags:
 
   -help
      Get help on the 'quotes search' command.
+  -page uint
+     Select page. (default 1)
   -pretty
      Display output in a table.
   -verbose

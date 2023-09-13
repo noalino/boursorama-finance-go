@@ -13,16 +13,21 @@ import (
 
 type SearchQuery struct {
 	Value string
+	Page  uint16
 }
 
-type SearchResult struct {
+type SearchResultAsset struct {
 	Symbol    string `json:"symbol"`
 	LastPrice string `json:"last_price"`
 	Market    string `json:"market"`
 	Name      string `json:"name"`
 }
 
-type SearchResults []SearchResult
+type SearchResult struct {
+	Page       uint16              `json:"current_page"`
+	TotalPages uint16              `json:"total_pages_count"`
+	Assets     []SearchResultAsset `json:"values"`
+}
 
 func (q SearchQuery) Validate() (SearchQuery, error) {
 	q.Value = utils.SanitizeUrlInput(q.Value)
@@ -33,28 +38,35 @@ func (q SearchQuery) Validate() (SearchQuery, error) {
 	return q, nil
 }
 
-func getSearchUrl(searchValue string) string {
-	return fmt.Sprintf("%s/recherche/_instruments/%s", utils.BASE_URL, searchValue)
+func getSearchUrl(query SearchQuery) string {
+	return fmt.Sprintf("%s/recherche/_instruments/%s?page=%d", utils.BASE_URL, query.Value, query.Page)
 }
 
-func Search(unsafeQuery SearchQuery) (SearchResults, error) {
+func Search(unsafeQuery SearchQuery) (SearchResult, error) {
 	query, err := unsafeQuery.Validate()
 	if err != nil {
-		return nil, err
+		return SearchResult{}, err
 	}
 
-	url := getSearchUrl(query.Value)
+	url := getSearchUrl(query)
 	doc, err := utils.GetHTMLDocument(url)
 	if err != nil {
-		return nil, err
+		return SearchResult{}, err
+	}
+
+	nbOfPages := utils.GetMaxPages(doc)
+
+	result := SearchResult{
+		Page:       query.Page,
+		TotalPages: nbOfPages,
+		Assets:     []SearchResultAsset{},
 	}
 
 	// Find the searched results
-	var assets SearchResults
 	view := doc.Find("[data-result-search]")
 
 	view.Find("tbody.c-table__body").First().Find("tr.c-table__row").Each(func(i int, s *goquery.Selection) {
-		asset := SearchResult{}
+		asset := SearchResultAsset{}
 		cells := s.Find("td")
 		link := cells.First().Find(".c-link")
 
@@ -78,8 +90,8 @@ func Search(unsafeQuery SearchQuery) (SearchResults, error) {
 		asset.Symbol = splitUrl[symbolIndex]
 		asset.Market = strings.TrimSpace(cells.First().Next().Text())
 		asset.LastPrice = strings.TrimSpace(cells.First().Next().Next().Text())
-		assets = append(assets, asset)
+		result.Assets = append(result.Assets, asset)
 	})
 
-	return assets, nil
+	return result, nil
 }

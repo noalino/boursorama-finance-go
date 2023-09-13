@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -15,7 +16,16 @@ type Router struct {
 
 func (router *Router) RegisterHandlers() {
 	router.GET("/search", func(c *gin.Context) {
-		query := lib.SearchQuery{Value: c.Query("q")}
+		page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 16)
+		if err != nil {
+			handleBadRequest(c, err)
+			return
+		}
+
+		query := lib.SearchQuery{
+			Value: c.Query("q"),
+			Page:  uint16(page),
+		}
 
 		results, err := lib.Search(query)
 		if err != nil {

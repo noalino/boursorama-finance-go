@@ -34,24 +34,38 @@ paths:
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Select the page.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: Return the assets if found any.
           content:
             'application/json':
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    symbol:
-                      type: string
-                    last_price:
-                      type: string
-                    market:
-                      type: string
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                  total_pages_count:
+                    type: integer
+                  values:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        symbol:
+                          type: string
+                        last_price:
+                          type: string
+                        market:
+                          type: string
         '400':
           description: Bad request
           content:
