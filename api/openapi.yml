@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Quotes API
   description: A basic API to scrape financial assets quotes from the boursorama website.
-  version: 1.3.0
+  version: 1.4.0
   license:
     name: GPL-3.0
     url: https://github.com/noalino/boursorama-finance-go/blob/main/LICENSE
