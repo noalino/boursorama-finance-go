@@ -1,10 +1,11 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Quotes API
   description: A basic API to scrape financial assets quotes from the boursorama website.
   version: 1.3.0
   license:
     name: GPL-3.0
+    url: https://github.com/noalino/boursorama-finance-go/blob/main/LICENSE
 servers:
   - url: http://localhost:8080
 paths:
@@ -90,11 +91,11 @@ paths:
             type: string
         - name: startDate
           in: query
-          description: The date to start from.
+          description: The date to start from (default is a month from now).
           required: false
           schema:
             type: string
-            default: 21/01/2021 (a month from now)
+            default: 21/08/2023
         - name: duration
           in: query
           description: Specify the duration from the start date.
