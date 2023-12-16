@@ -106,22 +106,28 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 	scrapeQuotes := func() GetResults {
 		quotes := GetResults{}
 		doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
-			// Escape first row (table header)
+			// Skip first row (table header)
 			if i == 0 {
 				return
 			}
-			firstCell := s.Find(".c-table__cell").First()
+
+			values := s.Find(".c-table__cell").Map(func(_ int, item *goquery.Selection) string {
+				return strings.TrimSpace(item.Text())
+			})
+
 			quote := GetResult{}
-			date, err := time.Parse(GetResultDateFormat, strings.TrimSpace(firstCell.Text()))
+			date, err := time.Parse(GetResultDateFormat, values[0])
 			if err != nil {
 				return
 			}
 			quote.Date = GetResultDate{Time: date}
-			price, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimSpace(firstCell.Next().Text()), " ", ""), 64)
+
+			price, err := strconv.ParseFloat(values[1], 64)
 			if err != nil {
 				quote.Price = 0.0
 			}
 			quote.Price = price
+
 			quotes = append(quotes, quote)
 		})
 		return quotes
