@@ -28,7 +28,7 @@ type GetResultDate struct {
 
 type GetResult struct {
 	Date  GetResultDate `json:"date"`
-	Price float64       `json:"price"`
+	Close float64       `json:"close"`
 }
 
 type GetResults []GetResult
@@ -122,11 +122,11 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 			}
 			quote.Date = GetResultDate{Time: date}
 
-			price, err := strconv.ParseFloat(values[1], 64)
+			close, err := strconv.ParseFloat(values[1], 64)
 			if err != nil {
-				quote.Price = 0.0
+				quote.Close = 0.0
 			}
-			quote.Price = price
+			quote.Close = close
 
 			quotes = append(quotes, quote)
 		})

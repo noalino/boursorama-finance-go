@@ -142,7 +142,7 @@ paths:
                   properties:
                     date:
                       type: string
-                    price:
+                    close:
                       type: integer
         '400':
           description: Bad request
