@@ -144,6 +144,8 @@ paths:
                       type: string
                     close:
                       type: integer
+                    open:
+                      type: integer
         '400':
           description: Bad request
           content:

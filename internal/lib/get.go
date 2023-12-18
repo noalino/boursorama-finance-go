@@ -29,6 +29,7 @@ type GetResultDate struct {
 type GetResult struct {
 	Date  GetResultDate `json:"date"`
 	Close float64       `json:"close"`
+	Open  float64       `json:"open"`
 }
 
 type GetResults []GetResult
@@ -127,6 +128,12 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 				quote.Close = 0.0
 			}
 			quote.Close = close
+
+			open, err := strconv.ParseFloat(values[5], 64)
+			if err != nil {
+				quote.Open = 0.0
+			}
+			quote.Open = open
 
 			quotes = append(quotes, quote)
 		})
