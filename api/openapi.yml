@@ -146,6 +146,8 @@ paths:
                       type: integer
                     open:
                       type: integer
+                    performance:
+                      type: string
         '400':
           description: Bad request
           content:

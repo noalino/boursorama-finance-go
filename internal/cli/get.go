@@ -82,9 +82,10 @@ func (cli *Cli) RegisterGetAction() {
 		fmt.Println("date,close,open")
 		for _, quote := range quotes {
 			fmt.Printf(
-				"%s,%.2f,%.2f\n",
+				"%s,%.2f,%s,%.2f\n",
 				quote.Date.Format(lib.GetResultDateFormat),
 				quote.Close,
+				quote.Perf,
 				quote.Open,
 			)
 		}
