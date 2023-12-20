@@ -31,6 +31,8 @@ type GetResult struct {
 	Close float64       `json:"close"`
 	Open  float64       `json:"open"`
 	Perf  string        `json:"performance"`
+	High  float64       `json:"high"`
+	Low   float64       `json:"low"`
 }
 
 type GetResults []GetResult
@@ -137,6 +139,18 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 				quote.Open = 0.0
 			}
 			quote.Open = open
+
+			high, err := strconv.ParseFloat(values[3], 64)
+			if err != nil {
+				quote.High = 0.0
+			}
+			quote.High = high
+
+			low, err := strconv.ParseFloat(values[4], 64)
+			if err != nil {
+				quote.Low = 0.0
+			}
+			quote.Low = low
 
 			quotes = append(quotes, quote)
 		})

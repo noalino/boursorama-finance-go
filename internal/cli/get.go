@@ -79,13 +79,15 @@ func (cli *Cli) RegisterGetAction() {
 			return nil
 		}
 
-		fmt.Println("date,close,open")
+		fmt.Println("date,close,performance,high,low,open")
 		for _, quote := range quotes {
 			fmt.Printf(
-				"%s,%.2f,%s,%.2f\n",
+				"%s,%.2f,%s,%.2f,%.2f,%.2f\n",
 				quote.Date.Format(lib.GetResultDateFormat),
 				quote.Close,
 				quote.Perf,
+				quote.High,
+				quote.Low,
 				quote.Open,
 			)
 		}

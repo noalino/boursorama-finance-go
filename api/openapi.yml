@@ -148,6 +148,10 @@ paths:
                       type: integer
                     performance:
                       type: string
+                    high:
+                      type: integer
+                    low:
+                      type: integer
         '400':
           description: Bad request
           content:
