@@ -4,21 +4,29 @@ inputFolder=$1
 
 # Get data in CSV files
 mkdir -p $inputFolder
-parallel echo {} '|' quotes get --period 7 '>' $inputFolder/{}.csv
+parallel echo {} '|' quotes get --period weekly '>' $inputFolder/{}.csv
 
 # Merge CSV files
 i=0
+header="date"
 
-for filename in $inputFolder/*.csv; do
+for file in $inputFolder/*.csv; do
   ((i++))
+
+  filename=$(basename $file)
+  header+=",${filename%.*}"
 
   if [ $i -eq 1 ]
   then
-    cp $filename $inputFolder/tmp$i.csv
+    xsv select date,close $file > $inputFolder/tmp$i.csv
+    continue
   fi
 
-  xsv join date $inputFolder/tmp$i.csv date $inputFolder/"$(basename "$filename")" | xsv select '!date[1]' > $inputFolder/tmp$((i+1)).csv
+  xsv join date $inputFolder/tmp$((i-1)).csv date $inputFolder/"$(basename "$file")" | xsv select '!date[1],open,performance,high,low' > $inputFolder/tmp$i.csv
 done
+
+# Replace header
+sed -i '' "1s/.*/$header/" $inputFolder/tmp$i.csv
 
 # Output result
 cat $inputFolder/tmp$i.csv

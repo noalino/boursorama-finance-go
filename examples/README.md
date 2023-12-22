@@ -8,6 +8,7 @@ You will find a [script](./quotes.sh) to get quotes for multiple assets. This is
 
 You should have these CLI tools in your **PATH** to make it work:
 
+- [GNU sed](https://www.gnu.org/software/sed/): replace CSV header
 - [GNU parallel](https://www.gnu.org/software/parallel/): run commands in parallel
 - [xsv](https://github.com/BurntSushi/xsv): handle CSV from CLI
 - [quotes](https://github.com/noalino/boursorama-finance-go/releases) binary file
@@ -24,19 +25,18 @@ The script:
 For instance, running this:
 
 ```shell
-echo "brk.a\nbrk.b" | ./quotes.sh assets | xsv table
+echo "aapl\nmsft\ntsla" | ./quotes.sh assets | xsv table
 ```
 
 will output:
 
 ```shell
-date        brk.a      brk.a
-28/07/2023  533627.50  533627.50
-04/08/2023  533196.47  533196.47
-11/08/2023  543579.95  543579.95
-18/08/2023  534994.01  534994.01
-25/08/2023  540124.97  540124.97
-01/09/2023  549632.48  549632.48
+date        aapl    msft    tsla
+17/11/2023  189.69  369.85  234.30
+24/11/2023  189.97  377.43  235.45
+01/12/2023  191.24  374.51  238.83
+08/12/2023  195.71  374.23  243.84
+15/12/2023  197.57  370.73  253.50
 ```
 
 Please note that the arguments of **quotes** are provided inside the script.
