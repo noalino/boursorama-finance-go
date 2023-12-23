@@ -27,20 +27,23 @@ func Get() *cli.Command {
 func initGetFlags() []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
-			Name:  "duration",
-			Value: options.DefaultDuration.String(),
+			Name:    "duration",
+			Aliases: []string{"d"},
+			Value:   options.DefaultDuration.String(),
 			Usage: fmt.Sprintf(`Specify the duration, it should be one of the following values:
 	[%s]`, options.DurationsList),
 		},
 		&cli.StringFlag{
-			Name:  "from",
-			Value: options.DefaultFrom().String(),
+			Name:    "from",
+			Aliases: []string{"f"},
+			Value:   options.DefaultFrom().String(),
 			Usage: `Specify the start date, it must be in the following format:
 	DD/MM/YYYY`,
 		},
 		&cli.StringFlag{
-			Name:  "period",
-			Value: options.DefaultPeriod.String(),
+			Name:    "period",
+			Aliases: []string{"p"},
+			Value:   options.DefaultPeriod.String(),
 			Usage: fmt.Sprintf(`Specify the period, it should be one of the following values:
 	[%s]`, options.PeriodsList),
 		},

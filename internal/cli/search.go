@@ -25,19 +25,22 @@ func Search() *cli.Command {
 func initSearchFlags() []cli.Flag {
 	return []cli.Flag{
 		&cli.UintFlag{
-			Name:  "page",
-			Value: 1,
-			Usage: "load specific page",
+			Name:    "page",
+			Aliases: []string{"P"},
+			Value:   1,
+			Usage:   "load specific page",
 		},
 		&cli.BoolFlag{
-			Name:  "pretty",
-			Value: false,
-			Usage: "prettify the output",
+			Name:    "pretty",
+			Aliases: []string{"p"},
+			Value:   false,
+			Usage:   "prettify the output",
 		},
 		&cli.BoolFlag{
-			Name:  "verbose",
-			Value: false,
-			Usage: "show more info",
+			Name:    "verbose",
+			Aliases: []string{"v"},
+			Value:   false,
+			Usage:   "show more info",
 		},
 	}
 }

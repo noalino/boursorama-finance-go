@@ -57,10 +57,10 @@ USAGE:
    quotes search [options] ASSET
 
 OPTIONS:
-   --page value  load specific page (default: 1)
-   --pretty      prettify the output (default: false)
-   --verbose     show more info (default: false)
-   --help, -h    show help
+   --page value, -P value  load specific page (default: 1)
+   --pretty, -p            prettify the output (default: false)
+   --verbose, -v           show more info (default: false)
+   --help, -h              show help
 ```
 
 - `get [options] SYMBOL`
@@ -73,13 +73,13 @@ USAGE:
    quotes get [options] SYMBOL
 
 OPTIONS:
-   --duration value  Specify the duration, it should be one of the following values:
-                     [1M, 2M, 3M, 4M, 5M, 6M, 7M, 8M, 9M, 10M, 11M, 12M, 1Y, 2Y, 3Y] (default: "3M")
-   --from value      Specify the start date, it must be in the following format:
-                     DD/MM/YYYY (default: "21/11/2023")
-   --period value    Specify the period, it should be one of the following values:
-                     [daily, weekly, monthly, yearly] (default: "daily")
-   --help, -h        show help
+   --duration value, -d value  Specify the duration, it should be one of the following values:
+                               [1M, 2M, 3M, 4M, 5M, 6M, 7M, 8M, 9M, 10M, 11M, 12M, 1Y, 2Y, 3Y] (default: "3M")
+   --from value, -f value      Specify the start date, it must be in the following format:
+                               DD/MM/YYYY (default: "21/11/2023")
+   --period value, -p value    Specify the period, it should be one of the following values:
+                               [daily, weekly, monthly, yearly] (default: "daily")
+   --help, -h                  show help
 ```
 
 You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a **SYMBOL** value.
