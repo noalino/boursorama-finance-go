@@ -4,23 +4,22 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/leaanthony/clir"
-
-	. "github.com/noalino/boursorama-finance-go/internal/cli"
+	commands "github.com/noalino/boursorama-finance-go/internal/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	cli := Cli{
-		Cli: clir.NewCli(
-			"quotes",
-			"A basic scraper tool to get financial assets quotes",
-			"v1.4.0",
-		),
+	app := &cli.App{
+		Name:    "quotes",
+		Version: "v1.4.0",
+		Usage:   "A basic scraper tool to get financial assets quotes",
+		Commands: []*cli.Command{
+			commands.Get(),
+			commands.Search(),
+		},
 	}
 
-	cli.Init()
-
-	if err := cli.Run(); err != nil {
+	if err := app.Run(os.Args); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 	}
 }

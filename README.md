@@ -47,48 +47,39 @@ docker run --rm --name boursorama-finance-go-cli boursorama-finance-go quotes
 
 Available commands:
 
-- `search [NAME | ISIN]`
+- `search [options] ASSET`
 
 ```text
-Quotes search - Search a financial asset
+NAME:
+   quotes search - Search for a financial asset
 
-Search a financial asset by name or ISIN and return the following information:
-Symbol, Name, Category, Last price
+USAGE:
+   quotes search [options] ASSET
 
-Usage: quotes search [NAME | ISIN]
-
-Flags:
-
-  -help
-     Get help on the 'quotes search' command.
-  -page uint
-     Select page. (default 1)
-  -pretty
-     Display output in a table.
-  -verbose
-     Log more info.
+OPTIONS:
+   --page value  load specific page (default: 1)
+   --pretty      prettify the output (default: false)
+   --verbose     show more info (default: false)
+   --help, -h    show help
 ```
 
-- `get [OPTIONS] SYMBOL`
+- `get [options] SYMBOL`
 
 ```text
-Quotes get - Return quotes
+NAME:
+   quotes get - Return quotes
 
-Usage: quotes get [OPTIONS] SYMBOL
+USAGE:
+   quotes get [options] SYMBOL
 
-Flags:
-
-  -duration string
-     Specify the duration, it should be one of the following values:
-     ["1M","2M","3M","4M","5M","6M","7M","8M","9M","10M","11M","1Y","2Y","3Y"] (default "3M")
-  -from string
-     Specify the start date, it must be in the following format:
-      DD/MM/YYYY (default "a month from now")
-  -help
-     Get help on the 'quotes get' command.
-  -period string
-     Specify the period, it should be one the following values:
-     ["daily","weekly","monthly","yearly"] (default "daily")
+OPTIONS:
+   --duration value  Specify the duration, it should be one of the following values:
+                     [1M, 2M, 3M, 4M, 5M, 6M, 7M, 8M, 9M, 10M, 11M, 12M, 1Y, 2Y, 3Y] (default: "3M")
+   --from value      Specify the start date, it must be in the following format:
+                     DD/MM/YYYY (default: "21/11/2023")
+   --period value    Specify the period, it should be one of the following values:
+                     [daily, weekly, monthly, yearly] (default: "daily")
+   --help, -h        show help
 ```
 
 You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a **SYMBOL** value.
@@ -98,69 +89,69 @@ Choose the asset you were looking for and use the **SYMBOL** value in the `get` 
 Example:
 
 ```shell
-$ quotes search --pretty --verbose berkshire
-Searching for 'berkshire'...
-Results found:
-|----------|---------------------|--------------------|----------------|
-|  SYMBOL  |        NAME         |       MARKET       |   LAST PRICE   |
-|----------|---------------------|--------------------|----------------|
-| BHLB     | BERKSHIRE HILLS     | NYSE               | 21.78 USD      |
-|----------|---------------------|--------------------|----------------|
-| BRK.B    | BERKSHIRE HATH RG-B | NYSE               | 362.39 USD     |
-|----------|---------------------|--------------------|----------------|
-| BRK.A    | BERKSHIRE HATH RG-A | NYSE               | 549 632.48 USD |
-|----------|---------------------|--------------------|----------------|
-| 1u0HN0.L | BERKSHIRE HATH RG-A | LSE                | 0.00 USD       |
-|----------|---------------------|--------------------|----------------|
-| 1u0R37.L | BERKSHIRE HATH RG-B | LSE                | 362.50 USD     |
-|----------|---------------------|--------------------|----------------|
-| 1zBRYN   | BERKSHIRE HATH RG-B | XETRA              | 337.60 EUR     |
-|----------|---------------------|--------------------|----------------|
-| 1rAJW63B | BERKSHIRE HA/BNP WT | Euronext Amsterdam | 0.00 EUR       |
-|----------|---------------------|--------------------|----------------|
-| 1rANG58B | BERKSHIRE /BNP P-WT | Euronext Amsterdam | 0.20 EUR       |
-|----------|---------------------|--------------------|----------------|
-| 1rAJW02B | BERKSHIRE HA/BNP WT | Euronext Amsterdam | 0.00 EUR       |
-|----------|---------------------|--------------------|----------------|
-| 1rAP649N | BERKSHIRE /AAB P-WT | Euronext Amsterdam | 0.55 EUR       |
-|----------|---------------------|--------------------|----------------|
+$ quotes search --pretty --verbose apple
+Searching for 'apple'...
+Results found (page 1/702):
+|-----------------|--------------------|------------------|-------------|
+|     SYMBOL      |        NAME        |      MARKET      | CLOSE PRICE |
+|-----------------|--------------------|------------------|-------------|
+| AAPL            | APPLE              | NASDAQ           | 194.83 USD  |
+|-----------------|--------------------|------------------|-------------|
+| 1u0R2V.L        | APPLE              | LSE              | 199.00 USD  |
+|-----------------|--------------------|------------------|-------------|
+| 2aAAPL          | APPLE              | Swiss EBS Stocks | 193.53 EUR  |
+|-----------------|--------------------|------------------|-------------|
+| 1zAPC           | APPLE              | XETRA            | 178.58 EUR  |
+|-----------------|--------------------|------------------|-------------|
+| 1rPW94CB        | APPLE135.9SPLOPENB | Euronext Paris   | 4.16 EUR    |
+|-----------------|--------------------|------------------|-------------|
+| 1rPRJ5CB        | APPLE139.4SPLOPENB | Euronext Paris   | 0.79 EUR    |
+|-----------------|--------------------|------------------|-------------|
+| 1rPPS6CB        | APPLE152.7TPIOPENB | Euronext Paris   | 0.36 EUR    |
+|-----------------|--------------------|------------------|-------------|
+| 1rPX2QDB        | APPLE153.7SPSOPENB | Euronext Paris   | 1.18 EUR    |
+|-----------------|--------------------|------------------|-------------|
+| 1rPPP5DB        | APPLE141.2TCIOPENB | Euronext Paris   | 1.95 EUR    |
+|-----------------|--------------------|------------------|-------------|
+| 3rPFRSGE001LGZ2 | Tracker : Apple    | Dir Emet         | 1.09 EUR    |
+|-----------------|--------------------|------------------|-------------|
 
 
-$ quotes get brk.b
+$ quotes get aapl
 date,close,performance,high,low,open
-04/08/2023,350.24,0.00%,355.10,349.39,354.60
-07/08/2023,362.49,+3.50%,364.62,355.15,355.98
-08/08/2023,363.81,+0.36%,364.25,358.85,359.87
-09/08/2023,357.97,-1.61%,364.43,356.07,364.01
-10/08/2023,357.09,-0.25%,362.33,355.93,359.65
-11/08/2023,358.31,+0.34%,359.25,353.20,356.02
-14/08/2023,358.53,+0.06%,358.95,356.81,358.87
-15/08/2023,354.37,-1.16%,357.92,353.67,357.10
-16/08/2023,354.09,-0.08%,358.72,353.43,354.69
-17/08/2023,352.99,-0.31%,356.30,351.91,354.23
-18/08/2023,352.67,-0.09%,354.30,351.12,351.12
-21/08/2023,352.36,-0.09%,354.24,349.62,354.24
-22/08/2023,350.53,-0.52%,353.50,349.66,353.33
-23/08/2023,354.27,+1.07%,354.32,351.11,351.11
-24/08/2023,354.21,-0.02%,357.21,354.14,354.21
-25/08/2023,355.95,+0.49%,357.32,352.92,354.35
-28/08/2023,355.55,-0.11%,358.41,354.54,357.06
-29/08/2023,358.44,+0.81%,358.59,354.12,355.24
-30/08/2023,361.11,+0.74%,362.64,358.50,358.50
-31/08/2023,359.97,-0.32%,362.47,359.25,362.32
-01/09/2023,362.39,+0.67%,363.38,360.60,362.39
-05/09/2023,360.33,-0.57%,366.47,360.00,363.80
+20/11/2023,191.45,0.00%,191.90,189.88,189.88
+21/11/2023,190.64,-0.42%,191.50,189.74,191.47
+22/11/2023,191.31,+0.35%,192.93,190.83,191.47
+24/11/2023,189.97,-0.70%,190.90,189.25,190.90
+27/11/2023,189.79,-0.09%,190.67,188.90,189.90
+28/11/2023,190.40,+0.32%,191.08,189.40,189.71
+29/11/2023,189.37,-0.54%,192.09,188.97,190.98
+30/11/2023,189.95,+0.31%,190.32,188.19,189.85
+01/12/2023,191.24,+0.68%,191.56,189.23,190.32
+04/12/2023,189.43,-0.95%,190.01,187.46,190.00
+05/12/2023,193.42,+2.11%,194.40,190.21,190.22
+06/12/2023,192.32,-0.57%,194.76,192.12,194.47
+07/12/2023,194.27,+1.01%,195.00,193.59,193.68
+08/12/2023,195.71,+0.74%,195.99,193.67,194.10
+11/12/2023,193.18,-1.29%,193.49,191.43,193.02
+12/12/2023,194.71,+0.79%,194.72,191.72,193.00
+13/12/2023,197.96,+1.67%,198.00,194.88,195.00
+14/12/2023,198.11,+0.08%,199.62,196.16,198.07
+15/12/2023,197.57,-0.27%,198.40,197.02,197.38
+18/12/2023,195.89,-0.85%,196.63,194.40,196.09
+19/12/2023,196.94,+0.54%,196.95,195.89,196.08
+20/12/2023,194.83,-1.07%,197.68,194.83,196.97
 
-$ quotes get --from 01/01/2023 --period monthly --duration 6M brk.b
+$ quotes get --from 01/01/2023 --period monthly --duration 6M aapl
 date,close,performance,high,low,open
-30/12/2022,308.93,0.00%,308.99,305.62,306.34
-31/01/2023,311.55,+0.85%,311.86,305.79,307.61
-28/02/2023,305.02,-2.10%,306.15,303.41,304.89
-31/03/2023,308.25,+1.06%,308.79,305.00,305.74
-28/04/2023,328.44,+6.55%,328.81,325.22,325.70
-31/05/2023,321.20,-2.20%,322.36,319.39,321.87
-30/06/2023,341.18,+6.22%,342.50,338.40,338.69
-31/07/2023,352.01,+3.17%,352.33,350.21,350.73
+30/12/2022,129.93,0.00%,129.95,127.43,128.32
+31/01/2023,144.29,+11.05%,144.34,142.28,142.63
+28/02/2023,147.41,+2.16%,149.08,146.87,146.87
+31/03/2023,164.90,+11.86%,165.00,162.15,162.36
+28/04/2023,169.68,+2.90%,169.85,167.88,168.58
+31/05/2023,177.25,+4.46%,179.35,176.77,177.30
+30/06/2023,193.97,+9.43%,194.48,191.27,191.65
+31/07/2023,196.45,+1.28%,196.49,195.26,196.00
 ```
 
 See [examples](./examples/README.md) if you want to know how to get quotes for multiple assets.
