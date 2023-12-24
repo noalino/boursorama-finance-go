@@ -14,17 +14,20 @@ import (
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
+type GetCommand struct{}
+
 func Get() *cli.Command {
+	command := GetCommand{}
 	return &cli.Command{
 		Name:      "get",
 		Usage:     "Return quotes",
 		UsageText: `quotes get [options] SYMBOL`,
-		Flags:     initGetFlags(),
-		Action:    getAction,
+		Flags:     command.flags(),
+		Action:    command.action,
 	}
 }
 
-func initGetFlags() []cli.Flag {
+func (GetCommand) flags() []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
 			Name:    "duration",
@@ -50,7 +53,7 @@ func initGetFlags() []cli.Flag {
 	}
 }
 
-func getAction(cCtx *cli.Context) error {
+func (GetCommand) action(cCtx *cli.Context) error {
 	var symbol string
 
 	if utils.IsDataFromPipe() {

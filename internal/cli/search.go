@@ -12,17 +12,20 @@ import (
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
+type SearchCommand struct{}
+
 func Search() *cli.Command {
+	command := SearchCommand{}
 	return &cli.Command{
 		Name:      "search",
 		Usage:     "Search for a financial asset",
 		UsageText: "quotes search [options] ASSET",
-		Flags:     initSearchFlags(),
-		Action:    searchAction,
+		Flags:     command.flags(),
+		Action:    command.action,
 	}
 }
 
-func initSearchFlags() []cli.Flag {
+func (SearchCommand) flags() []cli.Flag {
 	return []cli.Flag{
 		&cli.UintFlag{
 			Name:    "page",
@@ -45,7 +48,7 @@ func initSearchFlags() []cli.Flag {
 	}
 }
 
-func searchAction(cCtx *cli.Context) error {
+func (SearchCommand) action(cCtx *cli.Context) error {
 	if cCtx.NArg() == 0 {
 		return errors.New("too few arguments, please refer to the documentation by running `quotes search --help`")
 	}
