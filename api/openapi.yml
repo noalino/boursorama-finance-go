@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Quotes API
-  description: A basic API to scrape financial assets quotes from the boursorama website.
+  description: A basic API to scrape financial assets historical data from the boursorama website.
   version: 1.4.0
   license:
     name: GPL-3.0
@@ -27,7 +27,7 @@ paths:
   /search:
     get:
       summary: Search for an asset
-      operationId: searchAsset
+      operationId: search
       parameters:
         - name: q
           in: query
@@ -78,10 +78,10 @@ paths:
                     type: string
                   message:
                     type: string
-  /get/{symbol}:
+  /historical/{symbol}:
     get:
-      summary: Get the asset's quotes
-      operationId: getQuotesBySymbol
+      summary: Get the asset's historical data
+      operationId: historicalBySymbol
       parameters:
         - name: symbol
           in: path
@@ -132,7 +132,7 @@ paths:
               - yearly
       responses:
         '200':
-          description: Return the quotes with dates.
+          description: Return the historical data.
           content:
             'application/json':
               schema:

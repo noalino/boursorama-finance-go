@@ -12,7 +12,7 @@ func main() {
 	app := &cli.App{
 		Name:    "quotes",
 		Version: "v1.4.0",
-		Usage:   "A basic scraper tool to get financial assets quotes",
+		Usage:   "A basic scraper tool to get financial assets historical data",
 		Commands: []*cli.Command{
 			commands.Get(),
 			commands.Search(),

@@ -80,7 +80,7 @@ func (q GetResults) Swap(i, j int) {
 	q[i], q[j] = q[j], q[i]
 }
 
-func getQuotesUrl(query GetQuery, page uint16) string {
+func getHistoricalUrl(query GetQuery, page uint16) string {
 	return fmt.Sprintf(
 		"%s/_formulaire-periode/page-%d?symbol=%s&historic_search[startDate]=%s&historic_search[duration]=%s&historic_search[period]=%s",
 		utils.BASE_URL,
@@ -99,7 +99,7 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 	}
 
 	// First page request to get the number of pages to scrape
-	url := getQuotesUrl(query, 1)
+	url := getHistoricalUrl(query, 1)
 	doc, err := utils.GetHTMLDocument(url)
 	if err != nil {
 		return nil, err
@@ -107,8 +107,8 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 
 	nbOfPages := utils.GetMaxPages(doc)
 
-	scrapeQuotes := func() GetResults {
-		quotes := GetResults{}
+	scrapeHistorical := func() GetResults {
+		results := GetResults{}
 		doc.Find(".c-table tr").Each(func(i int, s *goquery.Selection) {
 			// Skip first row (table header)
 			if i == 0 {
@@ -119,49 +119,49 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 				return strings.TrimSpace(item.Text())
 			})
 
-			quote := GetResult{}
+			result := GetResult{}
 			date, err := time.Parse(GetResultDateFormat, values[0])
 			if err != nil {
 				return
 			}
-			quote.Date = GetResultDate{Time: date}
+			result.Date = GetResultDate{Time: date}
 
-			quote.Perf = values[2]
+			result.Perf = values[2]
 
 			close, err := strconv.ParseFloat(values[1], 64)
 			if err != nil {
-				quote.Close = 0.0
+				result.Close = 0.0
 			}
-			quote.Close = close
+			result.Close = close
 
 			open, err := strconv.ParseFloat(values[5], 64)
 			if err != nil {
-				quote.Open = 0.0
+				result.Open = 0.0
 			}
-			quote.Open = open
+			result.Open = open
 
 			high, err := strconv.ParseFloat(values[3], 64)
 			if err != nil {
-				quote.High = 0.0
+				result.High = 0.0
 			}
-			quote.High = high
+			result.High = high
 
 			low, err := strconv.ParseFloat(values[4], 64)
 			if err != nil {
-				quote.Low = 0.0
+				result.Low = 0.0
 			}
-			quote.Low = low
+			result.Low = low
 
-			quotes = append(quotes, quote)
+			results = append(results, result)
 		})
-		return quotes
+		return results
 	}
 
-	var allQuotes GetResults
+	var allData GetResults
 
-	// Fetch quotes concurrently if there is more than one page
+	// Fetch historical data concurrently if there is more than one page
 	if nbOfPages < 2 {
-		allQuotes = scrapeQuotes()
+		allData = scrapeHistorical()
 	} else {
 		// Make channels to pass fatal errors in WaitGroup
 		fatalErrors := make(chan error)
@@ -169,18 +169,18 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 
 		var wg sync.WaitGroup
 		// Scrape by page
-		getPageQuotes := func(index uint16) (GetResults, error) {
-			url = getQuotesUrl(query, index+1)
+		getPageHistorical := func(index uint16) (GetResults, error) {
+			url = getHistoricalUrl(query, index+1)
 			doc, err = utils.GetHTMLDocument(url)
 			if err != nil {
 				return nil, err
 			}
-			return scrapeQuotes(), nil
+			return scrapeHistorical(), nil
 		}
-		// Init slice to return quotes from all pages
-		quotesByPage := make([]GetResults, nbOfPages)
-		// Use first page request to scrap quotes
-		quotesByPage[0] = scrapeQuotes()
+		// Init slice to return data from all pages
+		resultsByPage := make([]GetResults, nbOfPages)
+		// Use first page request to scrape data
+		resultsByPage[0] = scrapeHistorical()
 		// Fetch the remaining pages
 		for i := uint16(1); i < nbOfPages; i++ {
 			wg.Add(1)
@@ -188,7 +188,7 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 			go func(index uint16) {
 				defer wg.Done()
 
-				quotesByPage[index], err = getPageQuotes(index)
+				resultsByPage[index], err = getPageHistorical(index)
 				if err != nil {
 					fatalErrors <- err
 				}
@@ -211,11 +211,11 @@ func Get(unsafeQuery GetQuery) (GetResults, error) {
 			return nil, err
 		}
 
-		for _, currentPageQuotes := range quotesByPage {
-			allQuotes = append(allQuotes, currentPageQuotes...)
+		for _, currentPageResults := range resultsByPage {
+			allData = append(allData, currentPageResults...)
 		}
 	}
 
-	sort.Sort(allQuotes)
-	return allQuotes, nil
+	sort.Sort(allData)
+	return allData, nil
 }

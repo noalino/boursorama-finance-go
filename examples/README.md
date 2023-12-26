@@ -1,8 +1,8 @@
 # Examples
 
-## Get quotes for multiple assets
+## Get historical data for multiple assets
 
-You will find a [script](./quotes.sh) to get quotes for multiple assets. This is a simple example you can get inspiration from.
+You will find a [script](./quotes.sh) to get historical data for multiple assets. This is a simple example you can get inspiration from.
 
 ### Requirements
 

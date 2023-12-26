@@ -20,7 +20,7 @@ func Get() *cli.Command {
 	command := GetCommand{}
 	return &cli.Command{
 		Name:      "get",
-		Usage:     "Return quotes",
+		Usage:     "Return historical data",
 		UsageText: `quotes get [options] SYMBOL`,
 		Flags:     command.flags(),
 		Action:    command.action,
@@ -75,26 +75,26 @@ func (GetCommand) action(cCtx *cli.Context) error {
 		Duration: cCtx.String("duration"),
 		Period:   cCtx.String("period"),
 	}
-	quotes, err := lib.Get(query)
+	data, err := lib.Get(query)
 	if err != nil {
 		return err
 	}
 
-	if len(quotes) == 0 {
-		fmt.Println("No quotes found.")
+	if len(data) == 0 {
+		fmt.Println("No data found.")
 		return nil
 	}
 
 	fmt.Println("date,close,performance,high,low,open")
-	for _, quote := range quotes {
+	for _, item := range data {
 		fmt.Printf(
 			"%s,%.2f,%s,%.2f,%.2f,%.2f\n",
-			quote.Date.Format(lib.GetResultDateFormat),
-			quote.Close,
-			quote.Perf,
-			quote.High,
-			quote.Low,
-			quote.Open,
+			item.Date.Format(lib.GetResultDateFormat),
+			item.Close,
+			item.Perf,
+			item.High,
+			item.Low,
+			item.Open,
 		)
 	}
 

@@ -1,6 +1,6 @@
 # Boursorama-finance-go
 
-A basic tool aiming at scraping financial assets quotes from the [boursorama](https://www.boursorama.com/bourse/) website.
+A basic tool aiming at scraping financial assets historical data from the [boursorama](https://www.boursorama.com/bourse/) website.
 
 Both an API and a CLI are available to use.
 
@@ -67,7 +67,7 @@ OPTIONS:
 
 ```text
 NAME:
-   quotes get - Return quotes
+   quotes get - Return historical data
 
 USAGE:
    quotes get [options] SYMBOL
@@ -82,9 +82,9 @@ OPTIONS:
    --help, -h                  show help
 ```
 
-You first need to `search` for the asset you want to get quotes from, and if there is a result, it will return a **SYMBOL** value.
+You first need to `search` for the asset you want to get historical data from, and if there is a result, it will return a **SYMBOL** value.
 
-Choose the asset you were looking for and use the **SYMBOL** value in the `get` command to fetch the quotes.
+Choose the asset you were looking for and use the **SYMBOL** value in the `get` command to fetch the data.
 
 Example:
 
@@ -154,7 +154,7 @@ date,close,performance,high,low,open
 31/07/2023,196.45,+1.28%,196.49,195.26,196.00
 ```
 
-See [examples](./examples/README.md) if you want to know how to get quotes for multiple assets.
+See [examples](./examples/README.md) if you want to know how to get historical data for multiple assets.
 
 ## Licensing
 
