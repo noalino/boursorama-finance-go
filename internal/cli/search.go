@@ -19,7 +19,7 @@ func Search() *cli.Command {
 	return &cli.Command{
 		Name:      "search",
 		Usage:     "Search for a financial asset",
-		UsageText: "quotes search [options] ASSET",
+		UsageText: "bfinance search [options] ASSET",
 		Flags:     command.flags(),
 		Action:    command.action,
 	}
@@ -50,7 +50,7 @@ func (SearchCommand) flags() []cli.Flag {
 
 func (SearchCommand) action(cCtx *cli.Context) error {
 	if cCtx.NArg() == 0 {
-		return errors.New("too few arguments, please refer to the documentation by running `quotes search --help`")
+		return errors.New("too few arguments, please refer to the documentation by running `bfinance search --help`")
 	}
 
 	query := lib.SearchQuery{Value: cCtx.Args().First(), Page: uint16(cCtx.Uint("page"))}

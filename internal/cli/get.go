@@ -21,7 +21,7 @@ func Get() *cli.Command {
 	return &cli.Command{
 		Name:      "get",
 		Usage:     "Return historical data",
-		UsageText: `quotes get [options] SYMBOL`,
+		UsageText: `bfinance get [options] SYMBOL`,
 		Flags:     command.flags(),
 		Action:    command.action,
 	}
@@ -64,7 +64,7 @@ func (GetCommand) action(cCtx *cli.Context) error {
 		}
 	} else {
 		if cCtx.NArg() == 0 {
-			return errors.New("too few arguments, please refer to the documentation by using `quotes get --help`")
+			return errors.New("too few arguments, please refer to the documentation by using `bfinance get --help`")
 		}
 		symbol = cCtx.Args().First()
 	}

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:    "quotes",
+		Name:    "bfinance",
 		Version: "v1.4.0",
 		Usage:   "A basic scraper tool to get financial assets historical data",
 		Commands: []*cli.Command{

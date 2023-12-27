@@ -1,4 +1,3 @@
 builds:
-  -
-    main: ./cmd/quotes
-    binary: quotes
+  - main: ./cmd/bfinance
+    binary: bfinance

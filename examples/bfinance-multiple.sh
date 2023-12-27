@@ -4,7 +4,7 @@ inputFolder=$1
 
 # Get data in CSV files
 mkdir -p $inputFolder
-parallel echo {} '|' quotes get --period weekly '>' $inputFolder/{}.csv
+parallel echo {} '|' bfinance get --period weekly '>' $inputFolder/{}.csv
 
 # Merge CSV files
 i=0

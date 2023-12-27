@@ -16,13 +16,13 @@ cd boursorama-finance-go
 Then build the Docker image:
 
 ```shell
-docker build -t boursorama-finance-go .
+docker build -t bfinance-go .
 ```
 
 #### To run the API
 
 ```shell
-docker run --rm --name boursorama-finance-go-api -p 8080:8080 boursorama-finance-go quotes-api
+docker run --rm -p 8080:8080 bfinance-go bfinance-api
 ```
 
 It starts the API on _localhost:8080_.
@@ -34,7 +34,7 @@ It starts the API on _localhost:8080_.
 Or you can run it inside your terminal with Docker:
 
 ```shell
-docker run --rm --name boursorama-finance-go-cli boursorama-finance-go quotes
+docker run --rm bfinance-go bfinance
 ```
 
 ## How it works
@@ -51,10 +51,10 @@ Available commands:
 
 ```text
 NAME:
-   quotes search - Search for a financial asset
+   bfinance search - Search for a financial asset
 
 USAGE:
-   quotes search [options] ASSET
+   bfinance search [options] ASSET
 
 OPTIONS:
    --page value, -P value  load specific page (default: 1)
@@ -67,10 +67,10 @@ OPTIONS:
 
 ```text
 NAME:
-   quotes get - Return historical data
+   bfinance get - Return historical data
 
 USAGE:
-   quotes get [options] SYMBOL
+   bfinance get [options] SYMBOL
 
 OPTIONS:
    --duration value, -d value  Specify the duration, it should be one of the following values:
@@ -89,7 +89,7 @@ Choose the asset you were looking for and use the **SYMBOL** value in the `get` 
 Example:
 
 ```shell
-$ quotes search --pretty --verbose apple
+$ bfinance search --pretty --verbose apple
 Searching for 'apple'...
 Results found (page 1/702):
 |-----------------|--------------------|------------------|-------------|
@@ -117,7 +117,7 @@ Results found (page 1/702):
 |-----------------|--------------------|------------------|-------------|
 
 
-$ quotes get aapl
+$ bfinance get aapl
 date,close,performance,high,low,open
 20/11/2023,191.45,0.00%,191.90,189.88,189.88
 21/11/2023,190.64,-0.42%,191.50,189.74,191.47
@@ -142,7 +142,7 @@ date,close,performance,high,low,open
 19/12/2023,196.94,+0.54%,196.95,195.89,196.08
 20/12/2023,194.83,-1.07%,197.68,194.83,196.97
 
-$ quotes get --from 01/01/2023 --period monthly --duration 6M aapl
+$ bfinance get --from 01/01/2023 --period monthly --duration 6M aapl
 date,close,performance,high,low,open
 30/12/2022,129.93,0.00%,129.95,127.43,128.32
 31/01/2023,144.29,+11.05%,144.34,142.28,142.63

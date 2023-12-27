@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Quotes API
+  title: Bfinance API
   description: A basic API to scrape financial assets historical data from the boursorama website.
   version: 1.4.0
   license:

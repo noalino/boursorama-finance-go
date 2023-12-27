@@ -74,7 +74,7 @@ func Search(unsafeQuery SearchQuery) (SearchResult, error) {
 
 		url, ok := link.Attr("href")
 		if !ok {
-			log.Fatalf("Unable to find the quote symbol for %s\n", asset.Name)
+			log.Fatalf("Unable to find the symbol for %s\n", asset.Name)
 			return
 		}
 

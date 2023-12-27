@@ -2,7 +2,7 @@
 
 ## Get historical data for multiple assets
 
-You will find a [script](./quotes.sh) to get historical data for multiple assets. This is a simple example you can get inspiration from.
+You will find a [script](./bfinance-multiple.sh) to get historical data for multiple assets. This is a simple example you can get inspiration from.
 
 ### Requirements
 
@@ -11,21 +11,21 @@ You should have these CLI tools in your **PATH** to make it work:
 - [GNU sed](https://www.gnu.org/software/sed/): replace CSV header
 - [GNU parallel](https://www.gnu.org/software/parallel/): run commands in parallel
 - [xsv](https://github.com/BurntSushi/xsv): handle CSV from CLI
-- [quotes](https://github.com/noalino/boursorama-finance-go/releases) binary file
+- [bfinance](https://github.com/noalino/boursorama-finance-go/releases) binary file
 
 ### Usage
 
 The script:
 
 - reads symbols from the stdin
-- create CSV files for each symbol in the provided output folder (only argument to the script)
+- create CSV files for each symbol in the provided output folder (the only required argument to the script)
 - merge these files from the _date_ column
 - output the result in stdout.
 
 For instance, running this:
 
 ```shell
-echo "aapl\nmsft\ntsla" | ./quotes.sh assets | xsv table
+echo "aapl\nmsft\ntsla" | ./bfinance-multiple.sh assets | xsv table
 ```
 
 will output:
@@ -39,4 +39,4 @@ date        aapl    msft    tsla
 15/12/2023  197.57  370.73  253.50
 ```
 
-Please note that the arguments of **quotes** are provided inside the script.
+Please note that the arguments of **bfinance** are provided inside the script.
