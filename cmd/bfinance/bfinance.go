@@ -11,7 +11,7 @@ import (
 func main() {
 	app := &cli.App{
 		Name:    "bfinance",
-		Version: "v1.4.0",
+		Version: "v2.0.0",
 		Usage:   "A basic scraper tool to get financial assets historical data",
 		Commands: []*cli.Command{
 			commands.Get(),
