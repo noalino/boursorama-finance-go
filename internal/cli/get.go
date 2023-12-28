@@ -7,83 +7,96 @@ import (
 	"os"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/noalino/boursorama-finance-go/internal/lib"
 	options "github.com/noalino/boursorama-finance-go/internal/lib/options/get"
 	"github.com/noalino/boursorama-finance-go/internal/utils"
 )
 
-type getFlags struct {
-	duration string
-	from     string
-	period   string
+type GetCommand struct{}
+
+func Get() *cli.Command {
+	command := GetCommand{}
+	return &cli.Command{
+		Name:      "get",
+		Usage:     "Return historical data",
+		UsageText: `bfinance get [options] SYMBOL`,
+		Flags:     command.flags(),
+		Action:    command.action,
+	}
 }
 
-func (cli *Cli) RegisterGetAction() {
-	get := cli.NewSubCommand("get", "Return quotes\n")
-	get.LongDescription("Usage: quotes get [OPTIONS] SYMBOL")
+func (GetCommand) flags() []cli.Flag {
+	return []cli.Flag{
+		&cli.StringFlag{
+			Name:    "duration",
+			Aliases: []string{"d"},
+			Value:   options.DefaultDuration.String(),
+			Usage: fmt.Sprintf(`Specify the duration, it should be one of the following values:
+	[%s]`, options.DurationsList),
+		},
+		&cli.StringFlag{
+			Name:    "from",
+			Aliases: []string{"f"},
+			Value:   options.DefaultFrom().String(),
+			Usage: `Specify the start date, it must be in the following format:
+	DD/MM/YYYY`,
+		},
+		&cli.StringFlag{
+			Name:    "period",
+			Aliases: []string{"p"},
+			Value:   options.DefaultPeriod.String(),
+			Usage: fmt.Sprintf(`Specify the period, it should be one of the following values:
+	[%s]`, options.PeriodsList),
+		},
+	}
+}
 
-	// Flags
-	flags := &getFlags{
-		duration: options.DefaultDuration.String(),
-		from:     options.DefaultFrom().String(),
-		period:   options.DefaultPeriod.String(),
+func (GetCommand) action(cCtx *cli.Context) error {
+	var symbol string
+
+	if utils.IsDataFromPipe() {
+		s := bufio.NewScanner(os.Stdin)
+		for s.Scan() {
+			symbol = strings.TrimSpace(s.Text())
+			break
+		}
+	} else {
+		if cCtx.NArg() == 0 {
+			return errors.New("too few arguments, please refer to the documentation by using `bfinance get --help`")
+		}
+		symbol = cCtx.Args().First()
 	}
 
-	get.StringFlag(
-		"from",
-		"Specify the start date, it must be in the following format:\nDD/MM/YYYY",
-		&flags.from)
+	query := lib.GetQuery{
+		Symbol:   symbol,
+		From:     cCtx.String("from"),
+		Duration: cCtx.String("duration"),
+		Period:   cCtx.String("period"),
+	}
+	data, err := lib.Get(query)
+	if err != nil {
+		return err
+	}
 
-	get.StringFlag(
-		"duration",
-		fmt.Sprintf("Specify the duration, it should be one of the following values:\n[%s]", options.DurationsList),
-		&flags.duration)
-
-	get.StringFlag(
-		"period",
-		fmt.Sprintf("Specify the period, it should be one of the following values:\n[%s]", options.PeriodsList),
-		&flags.period)
-
-	// Action
-	get.Action(func() error {
-
-		var symbol string
-
-		if utils.IsDataFromPipe() {
-			s := bufio.NewScanner(os.Stdin)
-			for s.Scan() {
-				symbol = strings.TrimSpace(s.Text())
-				break
-			}
-		} else {
-			otherArgs := get.OtherArgs()
-			if len(otherArgs) == 0 {
-				return errors.New("too few arguments, please refer to the documentation by using `quotes get -help`")
-			}
-			symbol = otherArgs[0]
-		}
-
-		query := lib.GetQuery{
-			Symbol:   symbol,
-			From:     flags.from,
-			Duration: flags.duration,
-			Period:   flags.period,
-		}
-		quotes, err := lib.Get(query)
-		if err != nil {
-			return err
-		}
-
-		if len(quotes) == 0 {
-			fmt.Println("No quotes found.")
-			return nil
-		}
-
-		fmt.Printf("date,%s\n", symbol)
-		for _, quote := range quotes {
-			fmt.Printf("%s,%.2f\n", quote.Date.Format(lib.GetResultDateFormat), quote.Price)
-		}
-
+	if len(data) == 0 {
+		fmt.Println("No data found.")
 		return nil
-	})
+	}
+
+	fmt.Println("date,close,performance,high,low,open")
+	for _, item := range data {
+		fmt.Printf(
+			"%s,%.2f,%s,%.2f,%.2f,%.2f\n",
+			item.Date.Format(lib.GetResultDateFormat),
+			item.Close,
+			item.Perf,
+			item.High,
+			item.Low,
+			item.Open,
+		)
+	}
+
+	return nil
 }

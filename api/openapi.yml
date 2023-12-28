@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Quotes API
-  description: A basic API to scrape financial assets quotes from the boursorama website.
-  version: 1.4.0
+  title: Bfinance API
+  description: A basic API to scrape financial assets historical data from the boursorama website.
+  version: 2.0.0
   license:
     name: GPL-3.0
     url: https://github.com/noalino/boursorama-finance-go/blob/main/LICENSE
@@ -27,7 +27,7 @@ paths:
   /search:
     get:
       summary: Search for an asset
-      operationId: searchAsset
+      operationId: search
       parameters:
         - name: q
           in: query
@@ -78,10 +78,10 @@ paths:
                     type: string
                   message:
                     type: string
-  /get/{symbol}:
+  /historical/{symbol}:
     get:
-      summary: Get the asset's quotes
-      operationId: getQuotesBySymbol
+      summary: Get the asset's historical data
+      operationId: historicalBySymbol
       parameters:
         - name: symbol
           in: path
@@ -89,7 +89,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: startDate
+        - name: from
           in: query
           description: The date to start from (default is a month from now).
           required: false
@@ -120,19 +120,19 @@ paths:
               - 3Y
         - name: period
           in: query
-          description: Specify the number of days between each quote.
+          description: Specify the period.
           required: false
           schema:
             type: string
-            default: '1'
+            default: daily
             enum:
-              - '1'
-              - '7'
-              - '30'
-              - '365'
+              - daily
+              - weekly
+              - monthly
+              - yearly
       responses:
         '200':
-          description: Return the quotes with dates.
+          description: Return the historical data.
           content:
             'application/json':
               schema:
@@ -142,7 +142,15 @@ paths:
                   properties:
                     date:
                       type: string
-                    price:
+                    close:
+                      type: integer
+                    open:
+                      type: integer
+                    performance:
+                      type: string
+                    high:
+                      type: integer
+                    low:
                       type: integer
         '400':
           description: Bad request
