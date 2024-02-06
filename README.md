@@ -1,49 +1,26 @@
 # Boursorama-finance-go
 
-A basic tool aiming at scraping financial assets historical data from the [boursorama](https://www.boursorama.com/bourse/) website.
-
-Both an API and a CLI are available to use.
+A CLI tool aiming at scraping financial assets historical data from the [boursorama](https://www.boursorama.com/bourse/) website.
 
 ## Getting started
 
-Clone the repository:
+[Download](https://github.com/noalino/boursorama-finance-go/releases) and run the binary file.
+
+Or you can run it inside your terminal with Docker by cloning the repository:
 
 ```shell
 git clone https://github.com/noalino/boursorama-finance-go
 cd boursorama-finance-go
 ```
 
-Then build the Docker image:
+Then building the Docker image:
 
 ```shell
 docker build -t bfinance-go .
-```
-
-#### To run the API
-
-```shell
-docker run --rm -p 8080:8080 bfinance-go bfinance-api
-```
-
-It starts the API on _localhost:8080_.
-
-#### To run the CLI
-
-[Download](https://github.com/noalino/boursorama-finance-go/releases) and run the binary file.
-
-Or you can run it inside your terminal with Docker:
-
-```shell
 docker run --rm bfinance-go bfinance
 ```
 
 ## How it works
-
-### API
-
-[OpenAPI documentation](api/openapi.yml)
-
-### CLI
 
 Available commands:
 
