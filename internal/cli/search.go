@@ -15,7 +15,7 @@ import (
 type SearchCommand struct{}
 
 func Search() *cli.Command {
-	command := SearchCommand{}
+	var command Command[lib.SearchResult] = SearchCommand{}
 	return &cli.Command{
 		Name:      "search",
 		Usage:     "Search for a financial asset",
@@ -48,25 +48,36 @@ func (SearchCommand) flags() []cli.Flag {
 	}
 }
 
-func (SearchCommand) action(cCtx *cli.Context) error {
+func (cmd SearchCommand) action(cCtx *cli.Context) error {
 	if cCtx.NArg() == 0 {
 		return errors.New("too few arguments, please refer to the documentation by running `bfinance search --help`")
 	}
 
-	query := lib.SearchQuery{Value: cCtx.Args().First(), Page: uint16(cCtx.Uint("page"))}
-
-	utils.PrintfOrVoid(cCtx.Bool("verbose"), "Searching for '%s'...\n", query.Value)
-	result, err := lib.Search(query)
+	data, err := cmd.extract(cCtx)
 	if err != nil {
 		return err
 	}
 
-	if len(result.Assets) == 0 {
+	cmd.load(cCtx, data)
+
+	return nil
+}
+
+func (SearchCommand) extract(cCtx *cli.Context) (lib.SearchResult, error) {
+	query := lib.SearchQuery{Value: cCtx.Args().First(), Page: uint16(cCtx.Uint("page"))}
+
+	utils.PrintfOrVoid(cCtx.Bool("verbose"), "Searching for '%s'...\n", query.Value)
+
+	return lib.Search(query)
+}
+
+func (SearchCommand) load(cCtx *cli.Context, data lib.SearchResult) {
+	if len(data.Assets) == 0 {
 		fmt.Println("No result found.")
-		return nil
+		return
 	}
 
-	fmt.Printf("Results found (page %d/%d):\n", result.Page, result.TotalPages)
+	fmt.Printf("Results found (page %d/%d):\n", data.Page, data.TotalPages)
 
 	if cCtx.Bool("pretty") {
 		table := tablewriter.NewWriter(os.Stdout)
@@ -76,7 +87,7 @@ func (SearchCommand) action(cCtx *cli.Context) error {
 		table.SetRowLine(true)
 
 		lines := [][]string{}
-		for _, asset := range result.Assets {
+		for _, asset := range data.Assets {
 			line := []string{asset.Symbol, asset.Name, asset.Market, asset.LastPrice}
 			lines = append(lines, line)
 		}
@@ -85,10 +96,8 @@ func (SearchCommand) action(cCtx *cli.Context) error {
 		table.Render()
 	} else {
 		fmt.Println("symbol,name,market,last price")
-		for _, asset := range result.Assets {
+		for _, asset := range data.Assets {
 			fmt.Printf("%s,%s,%s,%s\n", asset.Symbol, asset.Name, asset.Market, asset.LastPrice)
 		}
 	}
-
-	return nil
 }
