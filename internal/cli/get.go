@@ -17,7 +17,7 @@ import (
 type GetCommand struct{}
 
 func Get() *cli.Command {
-	command := GetCommand{}
+	var command Command[lib.GetResults] = GetCommand{}
 	return &cli.Command{
 		Name:      "get",
 		Usage:     "Return historical data",
@@ -53,7 +53,18 @@ func (GetCommand) flags() []cli.Flag {
 	}
 }
 
-func (GetCommand) action(cCtx *cli.Context) error {
+func (cmd GetCommand) action(cCtx *cli.Context) error {
+	data, err := cmd.extract(cCtx)
+	if err != nil {
+		return err
+	}
+
+	cmd.load(cCtx, data)
+
+	return nil
+}
+
+func (GetCommand) extract(cCtx *cli.Context) (lib.GetResults, error) {
 	var symbol string
 
 	if utils.IsDataFromPipe() {
@@ -64,7 +75,7 @@ func (GetCommand) action(cCtx *cli.Context) error {
 		}
 	} else {
 		if cCtx.NArg() == 0 {
-			return errors.New("too few arguments, please refer to the documentation by using `bfinance get --help`")
+			return lib.GetResults{}, errors.New("too few arguments, please refer to the documentation by using `bfinance get --help`")
 		}
 		symbol = cCtx.Args().First()
 	}
@@ -75,14 +86,13 @@ func (GetCommand) action(cCtx *cli.Context) error {
 		Duration: cCtx.String("duration"),
 		Period:   cCtx.String("period"),
 	}
-	data, err := lib.Get(query)
-	if err != nil {
-		return err
-	}
+	return lib.Get(query)
+}
 
+func (GetCommand) load(_ *cli.Context, data lib.GetResults) {
 	if len(data) == 0 {
 		fmt.Println("No data found.")
-		return nil
+		return
 	}
 
 	fmt.Println("date,close,performance,high,low,open")
@@ -97,6 +107,4 @@ func (GetCommand) action(cCtx *cli.Context) error {
 			item.Open,
 		)
 	}
-
-	return nil
 }
